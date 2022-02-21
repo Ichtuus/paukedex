@@ -1,16 +1,22 @@
 import { css } from "lit-element";
-export const style = css`
-  .wrapper {
+export const pokeSearchStyle = css`
+  .pokesearch-body {
     display: flex;
     justify-content: center;
     background-color: #292826;
     margin: 0;
+    overflow: hidden;
     align-items: center;
     height: 100vh;
+    transition: height 1s ease;
+  }
+
+  .pokesearch-body.toggleWrap {
+    height: 100px;
   }
 
   .container {
-    padding: 3rem;
+    margin: 2rem;
     width: 400px;
   }
 
