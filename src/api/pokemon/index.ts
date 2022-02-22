@@ -1,16 +1,24 @@
 import { Pokemon } from "@/types/pokeapi";
 import { PokeApiUrls } from "./urls";
 
-async function getPokemon(): Promise<Pokemon> {
-  console.log("getPokemon");
+async function getAllPokemon(): Promise<Pokemon> {
+  console.log("getPokemon api");
   return await fetch(PokeApiUrls.ALL_POKEMON).then((response: any) => {
     return response.json();
   });
 }
 
+async function getOnePokemon(name: string) {
+  return await fetch(`${PokeApiUrls.ONE_POKEMON}${name}`).then(
+    (response: any) => {
+      return response.json();
+    }
+  );
+}
+
 async function getPokemonSpecies(name: string) {
-  console.log("getPokemonSpecies");
-  return await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`).then(
+  console.log("getPokemonSpecies api");
+  return await fetch(`${PokeApiUrls.POKEMON_SPECIES}${name}`).then(
     (response: any) => {
       return response.json();
     }
@@ -18,6 +26,7 @@ async function getPokemonSpecies(name: string) {
 }
 
 export default {
-  getPokemon,
+  getAllPokemon,
+  getOnePokemon,
   getPokemonSpecies,
 };

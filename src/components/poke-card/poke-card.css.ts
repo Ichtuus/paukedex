@@ -5,6 +5,10 @@ export const pokeCardStyle = css`
     justify-content: center;
     margin: 24px 14px;
   }
+  .pokecard-body.hasPokemon .pokeball:after {
+    z-index: -1;
+  }
+
   .pokeball {
     position: relative;
     width: 300px;

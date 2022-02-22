@@ -9,21 +9,18 @@ import { enToFrPokemonName, frToEnPokemonName } from "../../utils/pokemon-name";
 import { detectLanguage, hasFrBrowser } from "../../utils/iso-language";
 import { PokeApiUrls } from "../../api/pokemon/urls";
 import cache from "../../api/pokemon/cache";
-import { PokeApp } from "../view/poke-app";
+
 @customElement("poke-search")
 export class PokeSearch extends LitElement {
   @property({ type: Boolean })
   isSearch: boolean = false;
-
   toggleWrapClass: ClassInfo = {};
-
-  pokemon: any = {};
 
   static get styles() {
     return [pokeSearchStyle];
   }
 
-  constructor(private $el: HTMLElement) {
+  constructor() {
     super();
   }
 
@@ -34,9 +31,10 @@ export class PokeSearch extends LitElement {
       this.shadowRoot?.querySelector(".search-field")
     )).value;
 
-    console.log(navigator.language);
+    console.info(`Navigator language: ${navigator.language}`);
     // Translate user research in to english word because Pokeapi just support english language
     if (hasFrBrowser(navigator.language)) {
+      // TODO to be improve
       if (detectLanguage(currentResearch)?.en) {
         // Needed if user use english translation with fr browser
         const { fr }: any = enToFrPokemonName(currentResearch);
@@ -62,36 +60,29 @@ export class PokeSearch extends LitElement {
         currentResearch.toLowerCase()
       );
     } else {
-      const response = await pokemonApi.getPokemon();
-      console.log(response);
-      neededPokemon = this.getCurrentResearch(
-        response,
+      neededPokemon = await pokemonApi.getOnePokemon(
         currentResearch.toLowerCase()
       );
     }
 
-    const pokemon = await pokemonApi.getPokemonSpecies(neededPokemon[0].name);
-
-    // this.isSearch = true;
     this.toggleWrapClass = { toggleWrap: (this.isSearch = true) };
 
     // Create cache if not exist
-    if (!(await caches.has("pokemon"))) {
-      cache.createCache(PokeApiUrls.ALL_POKEMON, "pokemon");
+    // Improve to cache all new research
+    if (!(await caches.has("onepokemon"))) {
+      cache.createCache(
+        `${PokeApiUrls.ONE_POKEMON}${currentResearch.toLowerCase()}`,
+        "onepokemon"
+      );
     }
 
-    this.pokemon = pokemon;
-
-    console.log("pokemon", pokemon);
+    this.dispatchEvent(
+      new CustomEvent("getPokemon", { detail: neededPokemon, composed: true })
+    );
   }
 
   getCurrentResearch(existing: any, current: any) {
-    console.log(current);
     try {
-      console.log(
-        "icicic",
-        existing.results.filter((pokemon: any) => pokemon.name == current)
-      );
       return existing.results.filter((pokemon: any) => pokemon.name == current);
     } catch (error) {
       console.error("Something wen't wrong when research pokemon", error);
