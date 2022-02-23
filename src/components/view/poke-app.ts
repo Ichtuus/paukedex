@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import "../poke-search/poke-search";
 import "../poke-card/poke-card";
+
 @customElement("poke-app")
 export class PokeApp extends LitElement {
   @property() pokemon!: any;

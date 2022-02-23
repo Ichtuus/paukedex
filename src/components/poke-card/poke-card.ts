@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { ClassInfo, classMap } from "lit/directives/class-map.js";
 
 import { pokeCardStyle } from "./poke-card.css";
-
+import fallbackImg from "../../assets/images/onepiece.png";
 @customElement("poke-card")
 export class PokeCard extends LitElement {
   @property() pokemon!: any;
@@ -24,9 +24,9 @@ export class PokeCard extends LitElement {
     super.connectedCallback();
   }
 
+  // Detect if props is update by the parent
   requestUpdate() {
     super.requestUpdate();
-    console.log("requestUpdate");
     if (this.pokemon) {
       this.hasPokemonClass = { hasPokemon: (this.hasPokemon = true) };
     }
@@ -36,11 +36,16 @@ export class PokeCard extends LitElement {
     return html`
       <div class="pokecard-body ${classMap(this.hasPokemonClass)}">
         <div class="pokeball">
-          <img src="${this.pokemon?.sprites.other.dream_world.front_default}" />
+          <img
+            src="${this.pokemon?.sprites.other.dream_world.front_default}"
+            alt="${this.pokemon?.name}"
+            onerror="this.onerror=null;this.src='${fallbackImg}';"
+          />
         </div>
       </div>
     `;
   }
+
   //   adoptedCallBack() {
   //   console.log("adoptedCallBack");
   // }

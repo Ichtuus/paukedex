@@ -1,6 +1,10 @@
 import { css } from "lit-element";
 export const pokeCardStyle = css`
   .pokecard-body {
+    display: none;
+  }
+  .pokecard-body.hasPokemon {
+    visibility: visible;
     display: flex;
     justify-content: center;
     margin: 24px 14px;

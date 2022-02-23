@@ -17,6 +17,7 @@ async function getCacheIfExist(url: string, name: string) {
 }
 
 async function createCache(url: string, name: string) {
+  console.log("create cache");
   const newCache = await caches.open(name);
   newCache.add(url);
 }

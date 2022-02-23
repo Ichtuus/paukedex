@@ -24,9 +24,12 @@ export class PokeSearch extends LitElement {
     super();
   }
 
-  async searchPokemon() {
-    let existingCache!: Pokemon;
+  async searchPokemon(e: any) {
+    if (e.keyCode != 13) {
+      return;
+    }
 
+    let existingCache!: Pokemon;
     let currentResearch = (<HTMLInputElement>(
       this.shadowRoot?.querySelector(".search-field")
     )).value;
@@ -45,11 +48,17 @@ export class PokeSearch extends LitElement {
     }
 
     // Promise to get cache
-    cache.getCacheIfExist(PokeApiUrls.ALL_POKEMON, "pokemon").then((cache) => {
-      if (cache) {
-        existingCache = cache;
-      }
-    });
+    cache
+      .getCacheIfExist(
+        `${PokeApiUrls.ONE_POKEMON}${currentResearch.toLowerCase()}`,
+        currentResearch.toLowerCase()
+      )
+      .then((cache) => {
+        if (cache) {
+          console.log("existing cache", cache);
+          existingCache = cache;
+        }
+      });
 
     let neededPokemon = [];
 
@@ -68,11 +77,11 @@ export class PokeSearch extends LitElement {
     this.toggleWrapClass = { toggleWrap: (this.isSearch = true) };
 
     // Create cache if not exist
-    // Improve to cache all new research
-    if (!(await caches.has("onepokemon"))) {
+    if (!(await caches.has(currentResearch.toLowerCase()))) {
+      console.log(`cache exist ${currentResearch.toLowerCase()}`);
       cache.createCache(
         `${PokeApiUrls.ONE_POKEMON}${currentResearch.toLowerCase()}`,
-        "onepokemon"
+        currentResearch.toLowerCase()
       );
     }
 
@@ -93,12 +102,13 @@ export class PokeSearch extends LitElement {
     return html`
       <div class="pokesearch-body ${classMap(this.toggleWrapClass)}">
         <div class="container">
-          <form role="search" method="get" class="search-form form" action="">
+          <div class="search-form form">
             <label>
               <span class="screen-reader-text">Search for...</span>
               <input
                 type="search"
                 class="search-field"
+                @keypress="${this.searchPokemon}"
                 placeholder="Type something..."
                 value=""
               />
@@ -110,7 +120,7 @@ export class PokeSearch extends LitElement {
             >
               GO
             </button>
-          </form>
+          </div>
         </div>
       </div>
     `;

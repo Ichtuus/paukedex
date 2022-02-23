@@ -43,7 +43,7 @@ export const pokeSearchStyle = css`
     outline: none;
   }
 
-  form.search-form {
+  div.search-form {
     display: flex;
     justify-content: center;
   }
