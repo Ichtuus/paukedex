@@ -7,7 +7,8 @@
     "build": "webpack --mode production",
     "watch": "webpack --watch",
     "start": "webpack-dev-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nc": "./src/scripts/newComponent.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.6.0",
+    "fs-extra": "^10.0.1",
     "html-webpack-plugin": "^5.5.0",
     "lit": "^2.2.0",
     "lit-css-loader": "^1.2.2",

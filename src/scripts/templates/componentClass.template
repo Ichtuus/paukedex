@@ -1,57 +1,53 @@
-import html from './{{cmpName}}.html';
-import style from './_{{cmpName}}.module.scss';
-import { Component } from "../../core/decorator";
-import { IWebComponent } from "@/type/index";
+import { LitElement, html } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { {{cmpNameCamelCase}}Style } from "./{{cmpNamekebabCase}}.css";
 
-@Component({
-    html: html,
-    style: style,
-	  properties: []
-})
-export class {{cmpNamePascalCase}} implements IWebComponent {
+@customElement("{{cmpNamekebabCase}}")
+export class {{cmpNamePascalCase}} extends LitElement {
 
-	static observedAttributes() {
-    // return an array containing the names of the attributes you want to observe
-	}
-
-  constructor(private $el: HTMLElement, private $host: Element) {}
-
-  /**
-   * Invoked each time the custom element is appended into a document-connected element.
-   * This will happen each time the node is moved, and may happen before the element's contents have been fully parsed.
-   */
-  connectedCallback() {
-    console.log('{{cmpName}} connected');
+  static get styles() {
+    return [{{cmpNameCamelCase}}Style];
   }
 
-  /**
-   * Invoked each time the custom element is disconnected from the document's DOM.
-   */
-  disconnectedCallback() {
-    console.log('{{cmpName}} disconnected');
+  constructor() {
+    super();
   }
 
-  /**
-   * Invoked each time the custom element is moved to a new document.
-   */
-  adoptedCallback() {
-    console.log('{{cmpName}} moved');
+  connectedCallback(): void {
+    // Needed to have rendering
+    super.connectedCallback();
   }
 
-  /**
-   * Invoked each time one of the custom element's attributes is added, removed, or changed.
-   * Which attributes to notice change for is specified in a static get observedAttributes method
-   *
-   * @param name
-   * @param oldValue
-   * @param newValue
-   */
-  attributeChangedCallback(name: string, oldValue: any, newValue: any) {
-    console.log(
-      `${name} changed, oldValue: ${oldValue}, newValue: ${newValue}`
-    );
+  // Detect if props is update by the parent
+  requestUpdate() {
+    super.requestUpdate();
   }
 
+  render() {
+    return html`
+      <div class="pokecard ">
+      </div>
+    `;
+  }
+
+  // Lifecycle 
+  // adoptedCallBack() {
+  //   console.log("adoptedCallBack");
+  // }
+
+  // async attributeChangedCallback(e: any) {
+  //   console.log("attributChangedCallBack");
+  // }
+
+  // hasChanged() {
+  //   console.log("hasChanged");
+  // }
+
+  // update() {
+  //   console.log("update");
+  // }
+
+  // updated() {
+  //   console.log("updated");
+  // }
 }
-
-// Ref.: https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
