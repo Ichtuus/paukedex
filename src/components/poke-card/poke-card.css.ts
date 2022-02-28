@@ -1,15 +1,22 @@
 import { css } from "lit-element";
 export const pokeCardStyle = css`
-  .pokecard-body {
+  .pokecard {
     display: none;
   }
-  .pokecard-body.hasPokemon {
+  .pokecard.hasPokemon {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 230px 1fr;
     visibility: visible;
-    display: flex;
     justify-content: center;
     margin: 24px 14px;
   }
-  .pokecard-body.hasPokemon .pokeball:after {
+  .pokecard-body {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  .pokecard-body .pokeball:after {
     z-index: -1;
   }
 

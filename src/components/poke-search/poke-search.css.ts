@@ -3,7 +3,7 @@ export const pokeSearchStyle = css`
   .pokesearch-body {
     display: flex;
     justify-content: center;
-    background-color: #292826;
+    background-color: #212121;
     margin: 0;
     overflow: hidden;
     align-items: center;

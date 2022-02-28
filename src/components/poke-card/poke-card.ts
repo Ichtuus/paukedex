@@ -34,13 +34,15 @@ export class PokeCard extends LitElement {
 
   render() {
     return html`
-      <div class="pokecard-body ${classMap(this.hasPokemonClass)}">
-        <div class="pokeball">
-          <img
-            src="${this.pokemon?.sprites.other.dream_world.front_default}"
-            alt="${this.pokemon?.name}"
-            onerror="this.onerror=null;this.src='${fallbackImg}';"
-          />
+      <div class="pokecard ${classMap(this.hasPokemonClass)}">
+        <div class="pokecard-body">
+          <div class="pokeball">
+            <img
+              src="${this.pokemon?.sprites.other.dream_world.front_default}"
+              alt="${this.pokemon?.name}"
+              onerror="this.onerror=null;this.src='${fallbackImg}';"
+            />
+          </div>
         </div>
       </div>
     `;
