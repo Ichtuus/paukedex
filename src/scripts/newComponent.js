@@ -11,7 +11,6 @@ const kebabNameComponent = utils.kebabCase(nameComponent);
 const pascalNameComponent = utils.pascalCase(nameComponent);
 const camelNameComponent = utils.camelCase(nameComponent);
 
-const regexNameComponent = /{{cmpName}}/gm;
 const regexNameComponentPascalCase = /{{cmpNamePascalCase}}/gm;
 const regexNameComponentCamelCase = /{{cmpNameCamelCase}}/gm;
 const regexNameComponentKebabCase = /{{cmpNamekebabCase}}/gm;
@@ -61,7 +60,7 @@ if (nameComponent) {
 
   // css file
   fs.writeFileSync(
-    `${componentsDir}/_${kebabNameComponent}.css.ts`,
+    `${componentsDir}/${kebabNameComponent}.css.ts`,
     cssTemplate,
     function (err) {
       if (err) return console.log(err);

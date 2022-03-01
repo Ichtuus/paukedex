@@ -5,11 +5,14 @@ export const pokeCardStyle = css`
   }
   .pokecard.hasPokemon {
     display: grid;
+    grid-gap: 74px;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 230px 1fr;
     visibility: visible;
     justify-content: center;
     margin: 24px 14px;
+    background-color: #212121;
+    border-radius: 50%;
   }
   .pokecard-body {
     grid-row: 2;

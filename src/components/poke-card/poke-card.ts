@@ -4,6 +4,9 @@ import { ClassInfo, classMap } from "lit/directives/class-map.js";
 
 import { pokeCardStyle } from "./poke-card.css";
 import fallbackImg from "../../assets/images/onepiece.png";
+
+import "../poke-stat/poke-stat";
+
 @customElement("poke-card")
 export class PokeCard extends LitElement {
   @property() pokemon!: any;
@@ -35,6 +38,9 @@ export class PokeCard extends LitElement {
   render() {
     return html`
       <div class="pokecard ${classMap(this.hasPokemonClass)}">
+        <poke-stat id="one"></poke-stat>
+        <poke-stat id="two"></poke-stat>
+
         <div class="pokecard-body">
           <div class="pokeball">
             <img
@@ -44,6 +50,9 @@ export class PokeCard extends LitElement {
             />
           </div>
         </div>
+
+        <poke-stat id="three"></poke-stat>
+        <poke-stat id="four"></poke-stat>
       </div>
     `;
   }
