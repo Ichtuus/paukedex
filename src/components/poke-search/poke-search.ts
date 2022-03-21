@@ -5,8 +5,9 @@ import { ClassInfo, classMap } from "lit/directives/class-map.js";
 import { pokeSearchStyle } from "./poke-search.css";
 import pokemonApi from "../../api/pokemon/index";
 import { Pokemon } from "../../types/pokeapi";
-import { enToFrPokemonName, frToEnPokemonName } from "../../utils/pokemon-name";
+import { enToFrPokemonName, frToEnPokemonName, POKEMON_NAME } from "../../utils/pokemon-name";
 import { detectLanguage, hasFrBrowser } from "../../utils/iso-language";
+import { firstLetterToUpperCase } from "../../utils/string";
 import { PokeApiUrls } from "../../api/pokemon/urls";
 import cache from "../../api/pokemon/cache";
 
@@ -15,6 +16,9 @@ export class PokeSearch extends LitElement {
   @property({ type: Boolean })
   isSearch: boolean = false;
   toggleWrapClass: ClassInfo = {};
+
+  @property({ type: Array })
+  suggests: { en: string; fr: string; }[] | undefined = [];
 
   static get styles() {
     return [pokeSearchStyle];
@@ -41,6 +45,10 @@ export class PokeSearch extends LitElement {
       if (detectLanguage(currentResearch)?.en) {
         // Needed if user use english translation with fr browser
         const { fr }: any = enToFrPokemonName(currentResearch);
+        if (!fr) {
+          // Update array of suggest related to initial research
+          this.suggests = this.getSuggestResearch(currentResearch)
+        }
         currentResearch = fr;
       }
       const { en }: any = frToEnPokemonName(currentResearch);
@@ -97,6 +105,20 @@ export class PokeSearch extends LitElement {
       console.error("Something wen't wrong when research pokemon", error);
     }
   }
+  
+  getSuggestResearch(currentResearch: string) {
+    const regex = new RegExp(`\\b^${currentResearch}`, 'i')
+    const suggest = POKEMON_NAME.filter((item: any) => {
+      if (item.fr.match(regex)) {
+        return item
+      }
+    })
+    const pokemonNameToFr = POKEMON_NAME.find((needed) => needed.en === firstLetterToUpperCase(currentResearch));
+    
+    if (!pokemonNameToFr) {
+      return suggest
+    }
+  }
 
   render() {
     return html`
@@ -121,6 +143,13 @@ export class PokeSearch extends LitElement {
               GO
             </button>
           </div>
+          <ul>
+            ${this.suggests?.map(pokemon => 
+              html`
+              <li>${pokemon.fr}</li>
+              `
+            )}
+          </ul>
         </div>
       </div>
     `;

@@ -1,12 +1,19 @@
+import {firstLetterToUpperCase} from './string'
+
 export function frToEnPokemonName(name: string) {
   if (name) {
-    return POKEMON_NAME.find((needed) => needed.fr === name);
+    return POKEMON_NAME.find((needed) => needed.fr === firstLetterToUpperCase(name));
   }
 }
 
 export function enToFrPokemonName(name: string) {
   if (name) {
-    return POKEMON_NAME.find((needed) => needed.en === name);
+    const hasPokemonNameToFr = POKEMON_NAME.find((needed) => needed.en === firstLetterToUpperCase(name));
+    if (hasPokemonNameToFr) {
+      return hasPokemonNameToFr;
+    } else {
+      return false
+    }
   }
 }
 
