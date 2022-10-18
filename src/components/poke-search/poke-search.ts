@@ -6,16 +6,20 @@ import { pokeSearchStyle } from "./poke-search.css";
 import pokemonApi from "../../api/pokemon/index";
 import { Pokemon } from "../../types/pokeapi";
 import { enToFrPokemonName, frToEnPokemonName } from "../../utils/pokemon-name";
-import { detectLanguage, hasFrBrowser } from "../../utils/iso-language";
+import { detectLanguage, FR_ISO_LANGUAGE, hasEnBrowser, hasFrBrowser } from "../../utils/iso-language";
 import { PokeApiUrls } from "../../api/pokemon/urls";
 import cache from "../../api/pokemon/cache";
 
+export enum ErrorTypeE {
+  NOTEXIST = 'notExist'
+}
 @customElement("poke-search")
 export class PokeSearch extends LitElement {
   @property({ type: Boolean })
   isSearch: boolean = false;
+  @property() searchError: string | undefined = "";
   toggleWrapClass: ClassInfo = {};
-
+  currentResearch: string = "";
   static get styles() {
     return [pokeSearchStyle];
   }
@@ -25,37 +29,34 @@ export class PokeSearch extends LitElement {
   }
 
   async searchPokemon(e: any) {
-    if (e.keyCode != 13) {
+    if (e.keyCode != 13 && e.type != "click") {
       return;
     }
 
     let existingCache!: Pokemon;
-    let currentResearch = (<HTMLInputElement>(
+    this.currentResearch = (<HTMLInputElement>(
       this.shadowRoot?.querySelector(".search-field")
     )).value;
 
     console.info(`Navigator language: ${navigator.language}`);
     // Translate user research in to english word because Pokeapi just support english language
     if (hasFrBrowser(navigator.language)) {
-      // TODO to be improve
-      if (detectLanguage(currentResearch)?.en) {
-        // Needed if user use english translation with fr browser
-        const { fr }: any = enToFrPokemonName(currentResearch);
-        currentResearch = fr;
-      }
-      const { en }: any = frToEnPokemonName(currentResearch);
-      currentResearch = en;
+      this.manageResearch(this.currentResearch);
+    }
+
+    if (hasEnBrowser(navigator.language)) { 
+      this.manageResearch(this.currentResearch);
     }
 
     // Promise to get cache
     cache
       .getCacheIfExist(
-        `${PokeApiUrls.ONE_POKEMON}${currentResearch.toLowerCase()}`,
-        currentResearch.toLowerCase()
+        `${PokeApiUrls.ONE_POKEMON}${this.currentResearch.toLowerCase()}`,
+        this.currentResearch.toLowerCase()
       )
       .then((cache) => {
         if (cache) {
-          console.log("existing cache", cache);
+          console.info("existing cache", cache);
           existingCache = cache;
         }
       });
@@ -66,28 +67,59 @@ export class PokeSearch extends LitElement {
     if (existingCache) {
       neededPokemon = this.getCurrentResearch(
         existingCache,
-        currentResearch.toLowerCase()
+        this.currentResearch.toLowerCase()
       );
     } else {
       neededPokemon = await pokemonApi.getOnePokemon(
-        currentResearch.toLowerCase()
+        this.currentResearch.toLowerCase()
       );
     }
 
     this.toggleWrapClass = { toggleWrap: (this.isSearch = true) };
 
     // Create cache if not exist
-    if (!(await caches.has(currentResearch.toLowerCase()))) {
-      console.log(`cache exist ${currentResearch.toLowerCase()}`);
+    if (!(await caches.has(this.currentResearch.toLowerCase()))) {
+      console.log(`cache does not exist for ${this.currentResearch.toLowerCase()}`);
       cache.createCache(
-        `${PokeApiUrls.ONE_POKEMON}${currentResearch.toLowerCase()}`,
-        currentResearch.toLowerCase()
+        `${PokeApiUrls.ONE_POKEMON}${this.currentResearch.toLowerCase()}`,
+        this.currentResearch.toLowerCase()
       );
     }
 
     this.dispatchEvent(
       new CustomEvent("getPokemon", { detail: neededPokemon, composed: true })
     );
+  }
+
+
+  manageResearch(research: string) {
+    if (detectLanguage(research)?.en) {
+      // Needed if user use english translation with fr browser
+      try {
+        const { fr }: any = enToFrPokemonName(research);
+        this.currentResearch = fr;  
+      } catch (e) {
+        console.error('error', e)
+        this.getErrorMsg(research, ErrorTypeE.NOTEXIST, navigator.language);
+      }
+    }
+
+    if (detectLanguage(research)?.fr) {
+      // Needed if user use french translation with en browser
+      try {
+        const { en }: any = frToEnPokemonName(research);
+        this.currentResearch = en;
+      } catch (e) {
+        console.error('error', e)
+        this.getErrorMsg(research, ErrorTypeE.NOTEXIST, navigator.language);
+      }
+    }
+  }
+
+  getErrorMsg(name: string, type: string, lang: string) {
+    import('../../i18n/lang.json')
+    .then((response: any) => this.searchError = `${name} ${response[lang].error[type]}`)
+    .catch(error => console.error('error', error));
   }
 
   getCurrentResearch(existing: any, current: any) {
@@ -104,7 +136,6 @@ export class PokeSearch extends LitElement {
         <div class="container">
           <div class="search-form form">
             <label>
-              <span class="screen-reader-text">Search for...</span>
               <input
                 type="search"
                 class="search-field"
@@ -121,6 +152,7 @@ export class PokeSearch extends LitElement {
               GO
             </button>
           </div>
+          <p class="pokesearch-error">${this.searchError}</p>
         </div>
       </div>
     `;

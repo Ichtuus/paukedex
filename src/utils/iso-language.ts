@@ -1,3 +1,4 @@
+import { capitalizeFirstLetter } from "./helper/string";
 import { POKEMON_NAME } from "./pokemon-name";
 
 export function hasFrBrowser(isolangFromBrowser: string) {
@@ -14,9 +15,10 @@ export function hasEnBrowser(isolangFromBrowser: string) {
 export function detectLanguage(name: string) {
   if (name) {
     const isFrLang = POKEMON_NAME.filter((obj: any) =>
-      Object.keys(obj).some((key) => obj[key].includes(name))
-    ).map((x) => x.fr === name);
+      Object.keys(obj).some((key) => obj[key].includes(capitalizeFirstLetter(name)))
+    ).map((x) => x.fr === capitalizeFirstLetter(name));
 
+    console.log(isFrLang)
     if (isFrLang[0]) {
       return { fr: FR_ISO_LANGUAGE };
     } else {

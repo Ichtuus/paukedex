@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+// const json = require('json-loader');
 
 module.exports = (env, argv) => ({
   mode: "development",
@@ -42,6 +43,10 @@ module.exports = (env, argv) => ({
   },
   module: {
     rules: [
+      // {
+      //   test: /\.json$/,
+      //   loader: 'json-loader'
+      // },
       {
         test: /\.tsx?$/,
         use: "ts-loader",

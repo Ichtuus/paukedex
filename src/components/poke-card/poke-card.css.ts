@@ -13,7 +13,17 @@ export const pokeCardStyle = css`
     z-index: -1;
   }
 
+  .pokecard-stats {
+    width: 100%;
+    margin: 15px;
+    justify-content: center;
+    background-color: rgb(41, 40, 38);
+    color: #ffff;
+    padding: 10px;
+  }
+
   .pokeball {
+    display: flex;
     position: relative;
     width: 300px;
     height: 300px;
@@ -28,6 +38,10 @@ export const pokeCardStyle = css`
     border-radius: 50%;
     border: 20px solid #212121;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2), inset 8px 5px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .pokeball-pokemonImg {
+    justify-content: center;
   }
 
   .pokeball:before {

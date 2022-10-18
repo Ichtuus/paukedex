@@ -1,0 +1,12 @@
+{
+    "en": {
+        "error": {
+            "notExist": "does not exist."
+        }
+    },
+    "fr": {
+        "error": {
+            "notExist": "n'existe pas."
+        }
+    }
+}

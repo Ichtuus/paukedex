@@ -11,6 +11,10 @@ export const pokeSearchStyle = css`
     transition: height 1s ease;
   }
 
+  .pokesearch-error {
+    color: #F00020;
+  }
+
   .pokesearch-body.toggleWrap {
     height: 100px;
   }
