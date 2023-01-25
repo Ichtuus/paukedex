@@ -1,4 +1,4 @@
-async function getCacheIfExist(url: string, name: string) {
+async function getCacheIfExistByUrl(url: string, name: string) {
   if (await caches.has(name)) {
     console.info("Cache exist for this name: ", name, "Resolved in url: ", url);
   } else {
@@ -22,7 +22,12 @@ async function createCache(url: string, name: string) {
   newCache.add(url);
 }
 
+async function getAllCacheKey() {
+  return await caches.keys()
+}
+
 export default {
-  getCacheIfExist,
+  getCacheIfExistByUrl,
   createCache,
+  getAllCacheKey
 };

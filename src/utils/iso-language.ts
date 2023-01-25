@@ -1,52 +1,57 @@
+
 import { capitalizeFirstLetter } from "./helper/string";
 import { POKEMON_NAME } from "./pokemon-name";
 
-export function hasFrBrowser(isolangFromBrowser: string) {
-  if (isolangFromBrowser) {
-    return FR_ISO_LANGUAGE.some((isolang) => isolang === isolangFromBrowser);
-  }
-}
-export function hasEnBrowser(isolangFromBrowser: string) {
-  if (isolangFromBrowser) {
-    return EN_ISO_LANGUAGE.some((isolang) => isolang === isolangFromBrowser);
-  }
-}
+export class IsoLanguage {
 
-export function detectLanguage(name: string) {
-  if (name) {
-    const isFrLang = POKEMON_NAME.filter((obj: any) =>
-      Object.keys(obj).some((key) => obj[key].includes(capitalizeFirstLetter(name)))
-    ).map((x) => x.fr === capitalizeFirstLetter(name));
+  private FR_ISO_LANGUAGE = [
+    "fr",
+    "fr-FR",
+    "fr-BE",
+    "fr-CA",
+    "fr-CH",
+    "fr-LU",
+  ];
 
-    console.log(isFrLang)
-    if (isFrLang[0]) {
-      return { fr: FR_ISO_LANGUAGE };
-    } else {
-      return { en: EN_ISO_LANGUAGE };
+  private EN_ISO_LANGUAGE = [
+    "en",
+    "en-US",
+    "en-EG",
+    "en-AU",
+    "en-GB",
+    "en-CA",
+    "en-NZ",
+    "en-IE",
+    "en-ZA",
+    "en-JM",
+    "en-BZ",
+    "en-TT",
+  ];
+
+  hasFrBrowser(isolangFromBrowser: string) {
+    if (isolangFromBrowser) {
+      return this.FR_ISO_LANGUAGE.some((isolang) => isolang === isolangFromBrowser);
     }
   }
+
+  hasEnBrowser(isolangFromBrowser: string) {
+    if (isolangFromBrowser) {
+      return this.EN_ISO_LANGUAGE.some((isolang) => isolang === isolangFromBrowser);
+    }
+  }
+
+  detectLanguage(name: string) {
+    if (name) {
+      const isFrLang = POKEMON_NAME.filter((obj: any) =>
+        Object.keys(obj).some((key) => obj[key].includes(capitalizeFirstLetter(name)))
+      ).map((x) => x.fr === capitalizeFirstLetter(name));
+  
+      if (isFrLang[0]) {
+        return { fr: this.FR_ISO_LANGUAGE };
+      } else {
+        return { en: this.EN_ISO_LANGUAGE };
+      }
+    }
+  }
+  
 }
-
-export const FR_ISO_LANGUAGE = [
-  "fr",
-  "fr-FR",
-  "fr-BE",
-  "fr-CA",
-  "fr-CH",
-  "fr-LU",
-];
-
-export const EN_ISO_LANGUAGE = [
-  "en",
-  "en-US",
-  "en-EG",
-  "en-AU",
-  "en-GB",
-  "en-CA",
-  "en-NZ",
-  "en-IE",
-  "en-ZA",
-  "en-JM",
-  "en-BZ",
-  "en-TT",
-];

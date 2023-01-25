@@ -1,32 +1,37 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, css, CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { ClassInfo, classMap } from "lit/directives/class-map.js";
 
-import { pokeSearchStyle } from "./poke-search.css";
 import pokemonApi from "../../api/pokemon/index";
 import { Pokemon } from "../../types/pokeapi";
 import { enToFrPokemonName, frToEnPokemonName } from "../../utils/pokemon-name";
-import { detectLanguage, FR_ISO_LANGUAGE, hasEnBrowser, hasFrBrowser } from "../../utils/iso-language";
+//  { detectLanguage, FR_ISO_LANGUAGE, hasEnBrowser, hasFrBrowser } from "../../utils/iso-language";
+import  {IsoLanguage}  from "../../utils/iso-language";
 import { PokeApiUrls } from "../../api/pokemon/urls";
 import cache from "../../api/pokemon/cache";
+import style from './poke-search.scss';
+import { until } from "lit/directives/until.js";
+import pokeball from "../../assets/images/hyperball.png";
 
-export enum ErrorTypeE {
+export enum ErrorTypeE { 
   NOTEXIST = 'notExist'
 }
+
 @customElement("poke-search")
 export class PokeSearch extends LitElement {
-  @property({ type: Boolean })
-  isSearch: boolean = false;
   @property() searchError: string | undefined = "";
-  toggleWrapClass: ClassInfo = {};
-  currentResearch: string = "";
-  static get styles() {
-    return [pokeSearchStyle];
-  }
+  @property() moves!: {}[]; 
+  @property({type: String }) pokeball = "./hyperball.png"
+  isSearch: boolean = false;
+  currentCache: any;
+  currentResearch: string | undefined = "";
+  IsoLanguage = new IsoLanguage()
+  @property({ type: Boolean }) toggleWrapClass = false
+  static styles = css`${style as unknown as CSSResultGroup}`;
 
   constructor() {
     super();
   }
+
 
   async searchPokemon(e: any) {
     if (e.keyCode != 13 && e.type != "click") {
@@ -35,22 +40,22 @@ export class PokeSearch extends LitElement {
 
     let existingCache!: Pokemon;
     this.currentResearch = (<HTMLInputElement>(
-      this.shadowRoot?.querySelector(".search-field")
+      this.shadowRoot?.querySelector(".pokesearch-form-field")
     )).value;
 
     console.info(`Navigator language: ${navigator.language}`);
     // Translate user research in to english word because Pokeapi just support english language
-    if (hasFrBrowser(navigator.language)) {
+    if (this.IsoLanguage.hasFrBrowser(navigator.language)) {
       this.manageResearch(this.currentResearch);
     }
 
-    if (hasEnBrowser(navigator.language)) { 
+    if (this.IsoLanguage.hasEnBrowser(navigator.language)) { 
       this.manageResearch(this.currentResearch);
     }
 
     // Promise to get cache
     cache
-      .getCacheIfExist(
+      .getCacheIfExistByUrl(
         `${PokeApiUrls.ONE_POKEMON}${this.currentResearch.toLowerCase()}`,
         this.currentResearch.toLowerCase()
       )
@@ -60,9 +65,11 @@ export class PokeSearch extends LitElement {
           existingCache = cache;
         }
       });
-
-    let neededPokemon = [];
-
+    
+   
+    // console.log('check before', this.currentResearch, 'other',existingCache)
+    let neededPokemon: any = [];
+    
     // Optimize ressource api call with caching system
     if (existingCache) {
       neededPokemon = this.getCurrentResearch(
@@ -73,10 +80,15 @@ export class PokeSearch extends LitElement {
       neededPokemon = await pokemonApi.getOnePokemon(
         this.currentResearch.toLowerCase()
       );
+      
+      let moves = await pokemonApi.getPokemonMoves(neededPokemon.moves);
+      this.moves = moves
     }
 
-    this.toggleWrapClass = { toggleWrap: (this.isSearch = true) };
-
+    this.toggleWrapClass = true;
+    if (this.isSearch) {
+      super.requestUpdate();
+    }
     // Create cache if not exist
     if (!(await caches.has(this.currentResearch.toLowerCase()))) {
       console.log(`cache does not exist for ${this.currentResearch.toLowerCase()}`);
@@ -85,30 +97,27 @@ export class PokeSearch extends LitElement {
         this.currentResearch.toLowerCase()
       );
     }
-
-    this.dispatchEvent(
-      new CustomEvent("getPokemon", { detail: neededPokemon, composed: true })
-    );
+  
+    this.dispatchEvent(new CustomEvent("getPokemon", { detail: neededPokemon, composed: true }));
+    this.dispatchEvent(new CustomEvent("getPokemonMoves", { detail: this.moves, composed: true }));
   }
 
 
   manageResearch(research: string) {
-    if (detectLanguage(research)?.en) {
+    if (this.IsoLanguage.detectLanguage(research)?.en) {
       // Needed if user use english translation with fr browser
       try {
-        const { fr }: any = enToFrPokemonName(research);
-        this.currentResearch = fr;  
+        this.currentResearch = enToFrPokemonName(research);
       } catch (e) {
         console.error('error', e)
         this.getErrorMsg(research, ErrorTypeE.NOTEXIST, navigator.language);
       }
     }
 
-    if (detectLanguage(research)?.fr) {
+    if (this.IsoLanguage.detectLanguage(research)?.fr) {
       // Needed if user use french translation with en browser
       try {
-        const { en }: any = frToEnPokemonName(research);
-        this.currentResearch = en;
+        this.currentResearch = frToEnPokemonName(research);;
       } catch (e) {
         console.error('error', e)
         this.getErrorMsg(research, ErrorTypeE.NOTEXIST, navigator.language);
@@ -117,8 +126,9 @@ export class PokeSearch extends LitElement {
   }
 
   getErrorMsg(name: string, type: string, lang: string) {
+    const regex = /(-[A-Z]+)/gm;
     import('../../i18n/lang.json')
-    .then((response: any) => this.searchError = `${name} ${response[lang].error[type]}`)
+    .then((response: any) => this.searchError = `${name} ${response[lang.replace(regex, '')].error[type]}`)
     .catch(error => console.error('error', error));
   }
 
@@ -130,15 +140,45 @@ export class PokeSearch extends LitElement {
     }
   }
 
+  async displayLastResearch() {
+    this.currentCache = await cache.getAllCacheKey();
+    return html`
+      <ul class="pokesearch-lastresearch">
+        ${this.currentCache.map((pokemonName: string) =>
+          html`
+          <li class="pokesearch-lastresearch-pokemon" @click="${() => this.submitResearchByCache(pokemonName)}">${enToFrPokemonName(pokemonName)}</li>`
+        )}
+      </ul>
+    `
+  }
+
+  submitResearchByCache(pokemoname: any) {
+    cache
+    .getCacheIfExistByUrl(
+      `${PokeApiUrls.ONE_POKEMON}${pokemoname.toLowerCase()}`,
+      pokemoname.toLowerCase()
+    ).then(async (cache) => {
+      if (cache) {
+        console.info("existing cache from last research", pokemoname);
+        const moves = await pokemonApi.getPokemonMoves(cache.moves)
+        this.toggleWrapClass = true;
+        this.dispatchEvent(new CustomEvent("getPokemon", { detail: cache, composed: true }));
+        this.dispatchEvent(new CustomEvent("getPokemonMoves", { detail: moves, composed: true }));
+      }
+    });
+  }
+
   render() {
     return html`
-      <div class="pokesearch-body ${classMap(this.toggleWrapClass)}">
+      <div class="pokesearch-body  ${this.toggleWrapClass ? 'toggleWrap' : ''} ">
         <div class="container">
-          <div class="search-form form">
-            <label>
+        <h1 class="pokesearch-title">POKEDEX</h1>
+
+          <div class="pokesearch-form form">
+            <label class="pokesearch-form-label">
               <input
                 type="search"
-                class="search-field"
+                class="pokesearch-form-field"
                 @keypress="${this.searchPokemon}"
                 placeholder="Type something..."
                 value=""
@@ -147,12 +187,14 @@ export class PokeSearch extends LitElement {
             <button
               type="button"
               @click="${this.searchPokemon}"
-              class="search-submit button"
+              class="pokesearch-form-submit"
             >
               GO
             </button>
+            <img src="${this.pokeball}"/>
           </div>
-          <p class="pokesearch-error">${this.searchError}</p>
+          <p class="pokesearch-form-error">${this.searchError}</p>
+          ${until(this.displayLastResearch())}
         </div>
       </div>
     `;

@@ -2,14 +2,13 @@ import { capitalizeFirstLetter } from "./helper/string";
 
 export function frToEnPokemonName(name: string) {
   if (name) {
-    console.log(POKEMON_NAME.find((needed) => needed.fr === capitalizeFirstLetter(name)))
-    return POKEMON_NAME.find((needed) => needed.fr === capitalizeFirstLetter(name));
+    return POKEMON_NAME.find((needed) => needed.fr === capitalizeFirstLetter(name))?.en;
   }
 }
 
 export function enToFrPokemonName(name: string) {
   if (name) {
-    return POKEMON_NAME.find((needed) => needed.en === capitalizeFirstLetter(name));
+    return POKEMON_NAME.find((needed) => needed.en === capitalizeFirstLetter(name))?.fr;
   }
 }
 

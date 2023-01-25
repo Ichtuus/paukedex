@@ -6,9 +6,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = (env, argv) => ({
   mode: "development",
-  entry: {
-    app: "./src/index.ts",
-  },
+  entry: "./src/index.ts",
   devServer: {
     host: "localhost",
     port: 8080,
@@ -18,7 +16,7 @@ module.exports = (env, argv) => ({
       "/api": "http://localhost:9999/",
     },
   },
-  devtool: argv.mode === "production" ? "none" : "inline-source-map",
+  devtool: argv.mode === "production" ? false : "inline-source-map",
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -38,7 +36,8 @@ module.exports = (env, argv) => ({
     // ]),
   ],
   output: {
-    filename: "[name].bundle.js",
+    filename: "[name].js",
+    assetModuleFilename: 'src/assets/images/[name].[ext]',
     path: path.resolve(__dirname, "dist"),
   },
   module: {
@@ -59,17 +58,47 @@ module.exports = (env, argv) => ({
         exclude: /node_modules/,
       },
       {
-        test: /\.s[a|c]ss$/,
+        test: /\.scss$/,
+        exclude: /node_modules/,
         use: [
-          { loader: "style-loader" },
-          { loader: "css-loader" },
-          { loader: "sass-loader" },
+            {
+                loader: "lit-css-loader"
+            },
+            {
+                loader: "sass-loader",
+                options: {
+                    sassOptions: {
+                        outputStyle: "compressed"
+                    },
+                },
+            }
         ],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: "asset/resource",
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192, // limite de poids de l'image (en octet)
+              fallback: 'file-loader',
+              name: '[path][name]-[hash].[ext]',
+              outputPath: 'assets/images/',
+              publicPath: 'assets/images/',
+
+            }
+          }
+        ],
+        // type: 'asset/resource',
+
       },
+    //   {
+    //     test: /\.(jpe?g|png|gif|svg)$/i, 
+    //     loader: 'file-loader',
+    //     options: {
+    //       name: '/public/icons/[name].[ext]'
+    //     }
+    // }
     ],
   },
   resolve: {
