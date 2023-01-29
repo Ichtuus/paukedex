@@ -15,33 +15,33 @@
  */
 
 const eventType = {
-    TOGGLE_DRAWER: 'TOGGLE_DRAWER',
+	TOGGLE_DRAWER: 'TOGGLE_DRAWER',
 }
 
 export class StoreEvent {
-    state: { isDrawerOpen: boolean } = { isDrawerOpen: false }
-    listeners: Array<any> = []
-    constructor() {}
+	state: { isDrawerOpen: boolean } = { isDrawerOpen: false }
+	listeners: Array<any> = []
+	constructor() {}
 
-    getState() {
-        return this.state
-    }
+	getState() {
+		return this.state
+	}
 
-    dispatch(action: any) {
-        switch (action.type) {
-            case eventType.TOGGLE_DRAWER:
-                this.state = {
-                    ...this.state,
-                    isDrawerOpen: !this.state.isDrawerOpen,
-                }
-                break
-            default:
-                break
-        }
-        this.listeners.forEach((listener) => listener())
-    }
+	dispatch(action: any) {
+		switch (action.type) {
+			case eventType.TOGGLE_DRAWER:
+				this.state = {
+					...this.state,
+					isDrawerOpen: !this.state.isDrawerOpen,
+				}
+				break
+			default:
+				break
+		}
+		this.listeners.forEach((listener) => listener())
+	}
 
-    subscribe(listener: Function) {
-        this.listeners.push(listener)
-    }
+	subscribe(listener: Function) {
+		this.listeners.push(listener)
+	}
 }
