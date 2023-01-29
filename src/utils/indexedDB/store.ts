@@ -1,8 +1,10 @@
-//@ts-ignore
 const _indexedDB =
 	window.indexedDB ||
+	//@ts-ignore
 	window.mozIndexedDB ||
+	//@ts-ignore
 	window.webkitIndexedDB ||
+	//@ts-ignore
 	window.msIndexedDB
 
 export enum typeTransactionE {

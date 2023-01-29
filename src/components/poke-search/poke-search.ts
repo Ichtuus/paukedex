@@ -1,17 +1,23 @@
+//Lit core
 import { LitElement, html, css, CSSResultGroup } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { until } from 'lit/directives/until.js'
 
+// API
 import pokemonApi from '../../api/pokemon/index'
 import { Pokemon } from '../../types/pokeapi'
+import { PokeApiUrls } from '../../api/pokemon/urls'
+
+// Utils
 import { enToFrPokemonName, frToEnPokemonName } from '../../utils/pokemon-name'
 //  { detectLanguage, FR_ISO_LANGUAGE, hasEnBrowser, hasFrBrowser } from "../../utils/iso-language";
 import { IsoLanguage } from '../../utils/iso-language'
-import { PokeApiUrls } from '../../api/pokemon/urls'
 import cache from '../../api/pokemon/cache'
 import style from './poke-search.scss'
-import { until } from 'lit/directives/until.js'
 import pokeball from '../../assets/images/hyperball.png'
-import { StoreEvent } from '../../utils/middleware/event'
+
+//UI components imports
+import '../../ui-components/poke-loader/poke-loader'
 
 export enum ErrorTypeE {
 	NOTEXIST = 'notExist',
@@ -22,15 +28,16 @@ export class PokeSearch extends LitElement {
 	@property() searchError: string | undefined = ''
 	@property() moves!: {}[]
 	@property({ type: String }) pokeball = './hyperball.png'
+	@property({ type: Boolean }) toggleWrapClass = false
+	@property({ type: Boolean }) showLoader = false;
 	isSearch: boolean = false
 	currentCache: any
 	currentResearch: string | undefined = ''
 	IsoLanguage = new IsoLanguage()
-	@property({ type: Boolean }) toggleWrapClass = false
+
 	static styles = css`
 		${style as unknown as CSSResultGroup}
 	`
-	storeEvent = new StoreEvent()
 
 	constructor() {
 		super()
@@ -40,6 +47,8 @@ export class PokeSearch extends LitElement {
 		if (e.keyCode != 13 && e.type != 'click') {
 			return
 		}
+
+		this.showLoader = true
 
 		let existingCache!: Pokemon
 		this.currentResearch = (<HTMLInputElement>(
@@ -79,18 +88,20 @@ export class PokeSearch extends LitElement {
 				this.currentResearch.toLowerCase()
 			)
 		} else {
+
 			neededPokemon = await pokemonApi.getOnePokemon(
 				this.currentResearch.toLowerCase()
 			)
+			this.moves = await pokemonApi.getPokemonMoves(neededPokemon.moves)
+			this.showLoader = false
 
-			let moves = await pokemonApi.getPokemonMoves(neededPokemon.moves)
-			this.moves = moves
 		}
 
 		this.toggleWrapClass = true
-		if (this.isSearch) {
-			super.requestUpdate()
-		}
+		// if (this.isSearch) {
+		// 	console.log('ici')
+		// 	super.requestUpdate()
+		// }
 
 		// Create cache if not exist
 		if (!(await caches.has(this.currentResearch.toLowerCase()))) {
@@ -161,9 +172,13 @@ export class PokeSearch extends LitElement {
 
 	async displayLastResearch() {
 		this.currentCache = await cache.getAllCacheKey()
+		const five = this.currentCache.slice(0, 5)
+		const other = this.currentCache.slice(5, this.currentCache.length)
+		console.log('five', five)
+		console.log('other', other)
 		return html`
 			<ul class="pokesearch-lastresearch">
-				${this.currentCache.map(
+				${five.map(
 					(pokemonName: string) =>
 						html` <li
 							class="pokesearch-lastresearch-pokemon"
@@ -171,44 +186,71 @@ export class PokeSearch extends LitElement {
 							${enToFrPokemonName(pokemonName)}
 						</li>`
 				)}
+				<li class="poke-showmore" style="color: white" @click="${() => this.showMore(other)}">...</li>
 			</ul>
 		`
 	}
 
+	showMore(other: []) {
+		if (other.length) {
+			this.shadowRoot?.querySelector('.poke-showmore')?.remove()
+			// TODO Be rework because the event click is losted
+			for (const i of other) {
+				//@ts-ignore
+				this.shadowRoot.querySelector('.pokesearch-lastresearch').innerHTML += `<li class="pokesearch-lastresearch-pokemon" @click="${() => this.submitResearchByCache(i)}">${enToFrPokemonName(i)}</li>`
+
+			}
+		}
+	} 
+
 	submitResearchByCache(pokemoname: any) {
 		cache
-			.getCacheIfExistByUrl(
-				`${PokeApiUrls.ONE_POKEMON}${pokemoname.toLowerCase()}`,
-				pokemoname.toLowerCase()
-			)
-			.then(async (cache) => {
-				if (cache) {
-					console.info('existing cache from last research', pokemoname)
-					const moves = await pokemonApi.getPokemonMoves(cache.moves)
-					this.toggleWrapClass = true
-					this.dispatchEvent(
-						new CustomEvent('getPokemon', {
-							detail: cache,
-							composed: true,
-						})
-					)
-					this.dispatchEvent(
-						new CustomEvent('getPokemonMoves', {
-							detail: moves,
-							composed: true,
-						})
-					)
-				}
-			})
+		.getCacheIfExistByUrl(
+			`${PokeApiUrls.ONE_POKEMON}${pokemoname.toLowerCase()}`,
+			pokemoname.toLowerCase()
+		)
+		.then(async (cache) => {
+			if (cache) {
+				console.info('existing cache from last research', pokemoname)
+				const moves = await pokemonApi.getPokemonMoves(cache.moves)
+				this.toggleWrapClass = true
+				this.dispatchEvent(
+					new CustomEvent('getPokemon', {
+						detail: cache,
+						composed: true,
+					})
+				)
+				this.dispatchEvent(
+					new CustomEvent('getPokemonMoves', {
+						detail: moves,
+						composed: true,
+					})
+				)
+			}
+		})
+	}
+
+	toggleSearchButtonLoaderVisibility() {
+		if (this.showLoader) {
+			return html`<poke-spinner .isVisible="${this.showLoader}"></poke-spinner>`
+		} else {
+			return html`
+			<button
+				type="button"
+				@click="${this.searchPokemon}"
+				class="pokesearch-form-submit">
+				GO
+			</button>
+			`	
+		}
 	}
 
 	render() {
 		return html`
 			<div
-				class="pokesearch-body  ${this.toggleWrapClass ? 'toggleWrap' : ''} ">
+				class="pokesearch-body ${this.toggleWrapClass ? 'toggleWrap' : ''}">
 				<div class="container">
 					<h1 class="pokesearch-title">POKEDEX</h1>
-
 					<div class="pokesearch-form form">
 						<label class="pokesearch-form-label">
 							<input
@@ -218,13 +260,9 @@ export class PokeSearch extends LitElement {
 								placeholder="Type something..."
 								value="" />
 						</label>
-						<button
-							type="button"
-							@click="${this.searchPokemon}"
-							class="pokesearch-form-submit">
-							GO
-						</button>
-						<img src="${this.pokeball}" />
+						
+						${this.toggleSearchButtonLoaderVisibility()}
+
 					</div>
 					<p class="pokesearch-form-error">${this.searchError}</p>
 					${until(this.displayLastResearch())}

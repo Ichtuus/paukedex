@@ -1,0 +1,49 @@
+.poke-loader {
+    margin: 100px auto;
+    width: 50px;
+    height: 40px;
+    text-align: center;
+    font-size: 10px;
+    visibility: hidden;
+
+    &.is-visible {
+        visibility: visible;
+    }
+
+    div {
+        background-color: rgb(249, 211, 66);
+        height: 100%;
+        width: 6px;
+        display: inline-block;
+        
+        -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+        animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    }
+
+    .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+  
+    .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+      
+    @-webkit-keyframes sk-bouncedelay {
+        0%, 80%, 100% { -webkit-transform: scale(0) }
+        40% { -webkit-transform: scale(1.0) }
+    }
+  
+    @keyframes sk-bouncedelay {
+        0%, 80%, 100% { 
+            transform: scale(0);
+            -webkit-transform: scale(0);
+        } 40% { 
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+}
+  

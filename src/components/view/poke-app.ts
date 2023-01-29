@@ -13,7 +13,7 @@ export class PokeApp extends LitElement {
 	}
 
 	render() {
-		return html`
+		return html`  
 			<poke-search></poke-search>
 			<poke-card .pokemon="${this.pokemon}" .moves="${this.moves}"></poke-card>
 		`
