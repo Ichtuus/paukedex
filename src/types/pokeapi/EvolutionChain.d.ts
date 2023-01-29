@@ -1,3 +1,1 @@
-export interface EvolutionChain  {
-  
-}
+export interface EvolutionChain {}

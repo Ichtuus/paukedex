@@ -1,3 +1,1 @@
-export interface EncounterMethod  {
-  
-}
+export interface EncounterMethod {}

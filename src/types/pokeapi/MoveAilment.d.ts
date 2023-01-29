@@ -1,3 +1,1 @@
-export interface MoveAilment  {
-  
-}
+export interface MoveAilment {}

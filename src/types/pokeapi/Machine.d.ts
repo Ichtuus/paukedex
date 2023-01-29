@@ -1,3 +1,1 @@
-export interface Machine  {
-  
-}
+export interface Machine {}

@@ -1,3 +1,1 @@
-export interface MovelearnMethod  {
-  
-}
+export interface MovelearnMethod {}

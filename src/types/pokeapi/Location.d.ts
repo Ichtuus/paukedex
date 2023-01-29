@@ -1,3 +1,1 @@
-export interface Location  {
-  
-}
+export interface Location {}

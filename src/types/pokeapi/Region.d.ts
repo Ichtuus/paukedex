@@ -1,3 +1,1 @@
-export interface Region  {
-  
-}
+export interface Region {}

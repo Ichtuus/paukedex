@@ -1,3 +1,1 @@
-export interface Movetarget  {
-  
-}
+export interface Movetarget {}

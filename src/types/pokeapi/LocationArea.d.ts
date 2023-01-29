@@ -1,3 +1,1 @@
-export interface LocationArea  {
-  
-}
+export interface LocationArea {}

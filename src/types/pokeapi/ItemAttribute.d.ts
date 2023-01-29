@@ -1,3 +1,1 @@
-export interface ItemAttribute  {
-  
-}
+export interface ItemAttribute {}

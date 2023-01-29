@@ -1,3 +1,1 @@
-export interface Pokedex  {
-  
-}
+export interface Pokedex {}

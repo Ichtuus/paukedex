@@ -1,38 +1,37 @@
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { BehaviorSubject, defer, from, map, mergeMap, Observable, of, Subject, switchMap, tap } from 'rxjs';
-import pokemonApi from "../../api/pokemon/index";
+import { LitElement, html } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
+import '../poke-search/poke-search'
+import '../poke-card/poke-card'
 
-import "../poke-search/poke-search";
-import "../poke-card/poke-card";
-
-@customElement("poke-app")
+@customElement('poke-app')
 export class PokeApp extends LitElement {
-  @property() pokemon!: any;
-  @property() moves!: any;
+    @property() pokemon!: any
+    @property() moves!: any
 
-  constructor() {
-    super();
-  }
+    constructor() {
+        super()
+    }
 
-  render() {    
+    render() {
+        return html`
+            <poke-search></poke-search>
+            <poke-card
+                .pokemon="${this.pokemon}"
+                .moves="${this.moves}"
+            ></poke-card>
+        `
+    }
 
-    return html`
-      <poke-search></poke-search>
-      <poke-card .pokemon="${this.pokemon}" .moves="${this.moves}"></poke-card>
-    `;
-  }
-
-  firstUpdated() {
-    this.addEventListener("getPokemon", (event: any) => {
-      this.pokemon = event.detail;
-    });
-    // if (this.moves.length > 0) {
-      this.addEventListener("getPokemonMoves", (event: any) => {
-        if (event.detail) {
-          this.moves = event.detail;
-        }
-      }); 
-    // }
-  }
+    firstUpdated() {
+        this.addEventListener('getPokemon', (event: any) => {
+            this.pokemon = event.detail
+        })
+        // if (this.moves.length > 0) {
+        this.addEventListener('getPokemonMoves', (event: any) => {
+            if (event.detail) {
+                this.moves = event.detail
+            }
+        })
+        // }
+    }
 }

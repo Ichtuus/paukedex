@@ -1,3 +1,1 @@
-export interface MoveCategory  {
-  
-}
+export interface MoveCategory {}

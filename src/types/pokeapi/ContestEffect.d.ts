@@ -1,3 +1,1 @@
-export interface ContestEffect  {
-  
-}
+export interface ContestEffect {}

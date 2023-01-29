@@ -1,3 +1,1 @@
-export interface BerryFirmness  {
-  
-}
+export interface BerryFirmness {}

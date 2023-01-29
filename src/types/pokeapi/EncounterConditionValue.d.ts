@@ -1,3 +1,1 @@
-export interface EncounterConditionValue  {
-  
-}
+export interface EncounterConditionValue {}

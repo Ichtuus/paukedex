@@ -1,3 +1,1 @@
-export interface SuperContestEffect  {
-  
-}
+export interface SuperContestEffect {}

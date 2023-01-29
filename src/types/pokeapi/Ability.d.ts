@@ -1,3 +1,1 @@
-export interface Ability  {
-  
-}
+export interface Ability {}

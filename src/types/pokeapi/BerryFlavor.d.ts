@@ -1,3 +1,1 @@
-export interface BerryFlavor  {
-  
-}
+export interface BerryFlavor {}

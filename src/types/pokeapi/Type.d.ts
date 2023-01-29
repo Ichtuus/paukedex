@@ -1,3 +1,1 @@
-export interface Type  {
-  
-}
+export interface Type {}

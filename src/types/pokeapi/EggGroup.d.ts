@@ -1,3 +1,1 @@
-export interface EggGroup  {
-  
-}
+export interface EggGroup {}

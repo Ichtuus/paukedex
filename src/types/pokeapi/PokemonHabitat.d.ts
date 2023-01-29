@@ -1,3 +1,1 @@
-export interface PokemonHabitat  {
-  
-}
+export interface PokemonHabitat {}

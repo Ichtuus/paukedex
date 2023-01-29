@@ -1,3 +1,1 @@
-export interface GrowthRate  {
-  
-}
+export interface GrowthRate {}

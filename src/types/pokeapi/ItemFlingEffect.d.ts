@@ -1,3 +1,1 @@
-export interface ItemFlingEffect  {
-  
-}
+export interface ItemFlingEffect {}

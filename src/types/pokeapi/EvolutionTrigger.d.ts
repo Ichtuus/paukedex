@@ -1,3 +1,1 @@
-export interface EvolutionTrigger  {
-  
-}
+export interface EvolutionTrigger {}

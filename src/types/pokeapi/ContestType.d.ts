@@ -1,3 +1,1 @@
-export interface ContestType  {
-  
-}
+export interface ContestType {}

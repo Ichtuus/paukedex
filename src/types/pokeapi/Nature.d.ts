@@ -1,3 +1,1 @@
-export interface Nature  {
-  
-}
+export interface Nature {}

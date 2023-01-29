@@ -1,3 +1,1 @@
-export interface Stat  {
-  
-}
+export interface Stat {}

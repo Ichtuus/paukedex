@@ -1,3 +1,1 @@
-export interface PokemonShape  {
-  
-}
+export interface PokemonShape {}

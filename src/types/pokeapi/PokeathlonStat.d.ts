@@ -1,3 +1,1 @@
-export interface PokeathlonStat  {
-  
-}
+export interface PokeathlonStat {}

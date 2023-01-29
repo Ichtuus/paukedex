@@ -1,3 +1,1 @@
-export interface Berry  {
-  
-}
+export interface Berry {}

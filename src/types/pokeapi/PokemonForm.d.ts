@@ -1,3 +1,1 @@
-export interface PokemonForm  {
-  
-}
+export interface PokemonForm {}

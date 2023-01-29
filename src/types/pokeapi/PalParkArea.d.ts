@@ -1,3 +1,1 @@
-export interface PalParkArea  {
-  
-}
+export interface PalParkArea {}

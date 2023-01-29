@@ -1,3 +1,1 @@
-export interface MoveBattleStyle  {
-  
-}
+export interface MoveBattleStyle {}

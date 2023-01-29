@@ -1,3 +1,1 @@
-export interface VersionGroup  {
-  
-}
+export interface VersionGroup {}

@@ -1,3 +1,1 @@
-export interface Gender  {
-  
-}
+export interface Gender {}

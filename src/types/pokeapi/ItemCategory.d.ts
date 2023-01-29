@@ -1,3 +1,1 @@
-export interface ItemCategory  {
-  
-}
+export interface ItemCategory {}

@@ -1,3 +1,1 @@
-export interface PokemonColor  {
-  
-}
+export interface PokemonColor {}
