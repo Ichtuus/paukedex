@@ -23,6 +23,8 @@ export enum ErrorTypeE {
 	NOTEXIST = 'notExist',
 }
 
+const NBR_SHOW_POKEMON = 5;
+
 @customElement('poke-search')
 export class PokeSearch extends LitElement {
 	@property() searchError: string | undefined = ''
@@ -30,6 +32,7 @@ export class PokeSearch extends LitElement {
 	@property({ type: String }) pokeball = './hyperball.png'
 	@property({ type: Boolean }) toggleWrapClass = false
 	@property({ type: Boolean }) showLoader = false;
+	@property({ type: Boolean }) showMoreCachePokemon = false
 	isSearch: boolean = false
 	currentCache: any
 	currentResearch: string | undefined = ''
@@ -171,14 +174,21 @@ export class PokeSearch extends LitElement {
 	}
 
 	async displayLastResearch() {
+		let currentCacheFormatted: Array<string> = []
+		let currentCacheOtherResult: Array<string> = []
+
 		this.currentCache = await cache.getAllCacheKey()
-		const five = this.currentCache.slice(0, 5)
-		const other = this.currentCache.slice(5, this.currentCache.length)
-		console.log('five', five)
-		console.log('other', other)
+		if (!this.showMoreCachePokemon) {
+			currentCacheFormatted = this.currentCache.slice(0, NBR_SHOW_POKEMON)
+			currentCacheOtherResult = this.currentCache.slice(NBR_SHOW_POKEMON, this.currentCache.length)
+		} else {
+			currentCacheFormatted = this.currentCache
+		}
+	
+		console.log('d', this.currentCache)
 		return html`
 			<ul class="pokesearch-lastresearch">
-				${five.map(
+				${currentCacheFormatted.map(
 					(pokemonName: string) =>
 						html` <li
 							class="pokesearch-lastresearch-pokemon"
@@ -186,20 +196,15 @@ export class PokeSearch extends LitElement {
 							${enToFrPokemonName(pokemonName)}
 						</li>`
 				)}
-				<li class="poke-showmore" style="color: white" @click="${() => this.showMore(other)}">...</li>
+				<li class="poke-showmore" style="color: white" @click="${() => this.showMore(currentCacheOtherResult)}">...</li>
 			</ul>
 		`
 	}
 
-	showMore(other: []) {
+	showMore(other: Array<string>) {
 		if (other.length) {
 			this.shadowRoot?.querySelector('.poke-showmore')?.remove()
-			// TODO Be rework because the event click is losted
-			for (const i of other) {
-				//@ts-ignore
-				this.shadowRoot.querySelector('.pokesearch-lastresearch').innerHTML += `<li class="pokesearch-lastresearch-pokemon" @click="${() => this.submitResearchByCache(i)}">${enToFrPokemonName(i)}</li>`
-
-			}
+			this.showMoreCachePokemon = true
 		}
 	} 
 
