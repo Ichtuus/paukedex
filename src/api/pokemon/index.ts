@@ -10,7 +10,7 @@ async function getAllPokemon(): Promise<Pokemon> {
 
 async function getOnePokemon(name: string) {
 	console.info('getOnePokemon api')
-	return await fetch(`${PokeApiUrls.ONE_POKEMON}${name}`).then(
+	return await fetch(`${PokeApiUrls.ONE_POKEMON}${name.toLowerCase()}`).then(
 		(response: any) => {
 			console.log('response data =>', response)
 			return response.json()
@@ -37,6 +37,15 @@ async function getPokemonMoves(
 		.catch(console.error.bind(console))
 }
 
+async function getPokemonEncounters(url: string): Promise<any>
+{
+	return await fetch(url).then(
+		(response: any) => {
+			return response.json()
+		}
+	)
+}
+
 async function getPokemonSpecies(name: string) {
 	console.info('getPokemonSpecies api')
 	return await fetch(`${PokeApiUrls.POKEMON_SPECIES}${name}`).then(
@@ -51,4 +60,5 @@ export default {
 	getOnePokemon,
 	getPokemonSpecies,
 	getPokemonMoves,
+	getPokemonEncounters
 }

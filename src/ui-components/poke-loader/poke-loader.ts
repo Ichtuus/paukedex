@@ -16,7 +16,7 @@ export class PokeLoader extends LitElement {
 
 	render() {
         return html`
-        <div class="poke-loader ${this.isVisible ? 'is-visible' : ''}" ${this.isVisible ? "disabled" : ''}>
+        <div class="poke-loader ${this.isVisible ? 'is-visible' : ''}" ?disabled=${this.isVisible}>
             <div class="bounce1"></div>
             <div class="bounce2"></div>
             <div class="bounce3"></div>

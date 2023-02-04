@@ -38,6 +38,20 @@
 		}
 	}
 
+	&-showmore, &-showless {
+		cursor: pointer;
+		background-color: rgb(249, 211, 66) !important;
+		color: inherit !important;
+		padding: 4px;
+
+		&:hover,
+		:active,
+		:focus {
+			background: #d4b743 !important;
+			color: #292826 !important;
+		}
+	}
+
 	&-form {
 		display: flex;
 		justify-content: center;

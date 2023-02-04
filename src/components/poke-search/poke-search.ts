@@ -23,6 +23,11 @@ export enum ErrorTypeE {
 	NOTEXIST = 'notExist',
 }
 
+export enum ShowMoreOrLess {
+	MORE = 'more',
+	LESS = 'less'
+}
+
 const NBR_SHOW_POKEMON = 5;
 
 @customElement('poke-search')
@@ -57,6 +62,7 @@ export class PokeSearch extends LitElement {
 		this.currentResearch = (<HTMLInputElement>(
 			this.shadowRoot?.querySelector('.pokesearch-form-field')
 		)).value
+		console.log('tst', this.currentResearch)
 
 		console.info(`Navigator language: ${navigator.language}`)
 		// Translate user research in to english word because Pokeapi just support english language
@@ -67,7 +73,7 @@ export class PokeSearch extends LitElement {
 		if (this.IsoLanguage.hasEnBrowser(navigator.language)) {
 			this.manageResearch(this.currentResearch)
 		}
-
+		console.log('tst', this.currentResearch)
 		// Promise to get cache
 		cache
 			.getCacheIfExistByUrl(
@@ -135,6 +141,8 @@ export class PokeSearch extends LitElement {
 		if (this.IsoLanguage.detectLanguage(research)?.en) {
 			// Needed if user use english translation with fr browser
 			try {
+				console.log('ici')
+
 				this.currentResearch = enToFrPokemonName(research)
 			} catch (e) {
 				console.error('error', e)
@@ -185,30 +193,34 @@ export class PokeSearch extends LitElement {
 			currentCacheFormatted = this.currentCache
 		}
 	
-		console.log('d', this.currentCache)
 		return html`
 			<ul class="pokesearch-lastresearch">
 				${currentCacheFormatted.map(
-					(pokemonName: string) =>
-						html` <li
-							class="pokesearch-lastresearch-pokemon"
-							@click="${() => this.submitResearchByCache(pokemonName)}">
-							${enToFrPokemonName(pokemonName)}
+			(pokemonName: string) =>
+				html` <li
+						class="pokesearch-lastresearch-pokemon"
+						@click="${() => this.submitResearchByCache(pokemonName)}">
+						${enToFrPokemonName(pokemonName)}
 						</li>`
-				)}
-				<li class="poke-showmore" style="color: white" @click="${() => this.showMore(currentCacheOtherResult)}">...</li>
+			)}
+				<li class="pokesearch-showmore" style="color: white" ?hidden=${this.showMoreCachePokemon} @click="${() => this.showMoreOrLess(currentCacheOtherResult, ShowMoreOrLess.MORE)}">Show more</li>
+				<li class="pokesearch-showless" style="color: white" ?hidden=${!this.showMoreCachePokemon} @click="${() => this.showMoreOrLess(this.currentCache, ShowMoreOrLess.LESS)}">Show less</li>
 			</ul>
 		`
 	}
 
-	showMore(other: Array<string>) {
-		if (other.length) {
-			this.shadowRoot?.querySelector('.poke-showmore')?.remove()
-			this.showMoreCachePokemon = true
+	showMoreOrLess(other: Array<string>, mode: string) {
+		if (mode !== ShowMoreOrLess.LESS) {
+			if (other.length) {
+				this.showMoreCachePokemon = true
+			}
+		} else {
+			this.showMoreCachePokemon = false
 		}
 	} 
 
 	submitResearchByCache(pokemoname: any) {
+		this.showLoader = true;	
 		cache
 		.getCacheIfExistByUrl(
 			`${PokeApiUrls.ONE_POKEMON}${pokemoname.toLowerCase()}`,
@@ -218,7 +230,11 @@ export class PokeSearch extends LitElement {
 			if (cache) {
 				console.info('existing cache from last research', pokemoname)
 				const moves = await pokemonApi.getPokemonMoves(cache.moves)
+				const encounters = await pokemonApi.getPokemonEncounters(cache.location_area_encounters);
+
 				this.toggleWrapClass = true
+				this.showLoader = false;
+
 				this.dispatchEvent(
 					new CustomEvent('getPokemon', {
 						detail: cache,
@@ -231,13 +247,19 @@ export class PokeSearch extends LitElement {
 						composed: true,
 					})
 				)
+				this.dispatchEvent(
+					new CustomEvent('getPokemonEncounters', {
+						detail: encounters,
+						composed: true,
+					})
+				)
 			}
 		})
 	}
 
 	toggleSearchButtonLoaderVisibility() {
 		if (this.showLoader) {
-			return html`<poke-spinner .isVisible="${this.showLoader}"></poke-spinner>`
+			return html`<poke-loader .isVisible="${this.showLoader}"></poke-loader>`
 		} else {
 			return html`
 			<button
@@ -262,12 +284,11 @@ export class PokeSearch extends LitElement {
 								type="search"
 								class="pokesearch-form-field"
 								@keypress="${this.searchPokemon}"
-								placeholder="Type something..."
+								placeholder="Choose an pokemon..."
 								value="" />
 						</label>
 						
 						${this.toggleSearchButtonLoaderVisibility()}
-
 					</div>
 					<p class="pokesearch-form-error">${this.searchError}</p>
 					${until(this.displayLastResearch())}

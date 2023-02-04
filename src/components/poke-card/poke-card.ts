@@ -5,16 +5,21 @@ import { until } from 'lit/directives/until.js'
 import style from './poke-card.scss'
 
 import fallbackImg from '../../assets/images/onepiece.png'
+import { Encounter } from '../../types/pokeapi/Encounter'
+import { PokemonCardFactory } from '../../utils/factory/card/pokemonCardFactory'
 
 @customElement('poke-card')
 export class PokeCard extends LitElement {
 	@property() pokemon!: any
 	@property() moves!: any
+	@property() encounters!: Encounter
 	@queryAsync('select') _selects!: any
 
 	hasPokemon: boolean = false
 	hasPokemonClass: ClassInfo = {}
 	currentMoove!: any
+
+	pokemonCardFactory: any = new PokemonCardFactory();
 
 	static styles = css`
 		${style as unknown as CSSResultGroup}
@@ -32,28 +37,36 @@ export class PokeCard extends LitElement {
 	// Detect if props is update by the parent
 	requestUpdate() {
 		super.requestUpdate()
+		console.log('request poke card')
+
+		if(this.moves) {
+			this.pokemonCardFactory.create('moves', this.moves)
+			console.log('test', )
+			
+		}
+
 		if (this.pokemon) {
-			this.hasPokemonClass = { hasPokemon: (this.hasPokemon = true) }
+			this.hasPokemonClass = { hasPokemon: this.hasPokemon = true }
 		}
 	}
 
-	getPokemonMoves() {
-		if (this.hasMoves()) {
-			const movenames = this.moves
-				.map((move: any) => this.arrayMethodFilterBylang(move.names, 'filter'))
-				.flat()
-			return html`
-				<label for="pokemonMoves">Competence: </label>
-				<select @change=${this.onChange} id="pokemonMoves" name="pokemonMoves">
-					${movenames.map(
-						(name: any) => html`
-							<option value="${name.name}">${name.name}</option>
-						`
-					)}
-				</select>
-			`
-		}
-	}
+	// getPokemonMoves() {
+	// 	if (this.hasMoves()) {
+	// 		const movenames = this.moves
+	// 			.map((move: any) => this.arrayMethodFilterBylang(move.names, 'filter'))
+	// 			.flat()
+	// 		return html`
+	// 			<label for="pokemonMoves">Competence: </label>
+	// 			<select @change=${this.onChange} id="pokemonMoves" name="pokemonMoves">
+	// 				${movenames.map(
+	// 					(name: any) => html`
+	// 						<option value="${name.name}">${name.name}</option>
+	// 					`
+	// 				)}
+	// 			</select>
+	// 		`
+	// 	}
+	// }
 
 	async getPokemonMoveDetail() {
 		if (this.hasMoves()) {
@@ -93,12 +106,18 @@ export class PokeCard extends LitElement {
 			: array[methodArray]((item: any) => item.language.name == 'fr')
 	}
 
+	getPokemonEncounters() {
+		console.log('encounter poke card', this.encounters)
+	}
+
 	render() {
 		return html`
 			<div class="ds-container pokecard-body ${classMap(this.hasPokemonClass)}">
 				<div class="ds-flex">
 					<div class="pokecard-stats ds-col__12-s ds-col__5-l">
-						${this.getPokemonMoves()}
+
+						${this.pokemonCardFactory.mf.getPokemonMoves()}
+
 						${until(
 							this.getPokemonMoveDetail().then((response) =>
 								response
@@ -107,6 +126,7 @@ export class PokeCard extends LitElement {
 							),
 							html`Loading...`
 						)}
+						
 					</div>
 					<div class="pokeball ds-col__6-s ds-col__2-l">
 						<img
@@ -117,7 +137,9 @@ export class PokeCard extends LitElement {
 							alt="${this.pokemon?.name}"
 							onerror="this.onerror=null;this.src='${fallbackImg}';" />
 					</div>
-					<div class="pokecard-stats ds-col__12-s ds-col__5-l">une chose</div>
+					<div class="pokecard-stats ds-col__12-s ds-col__5-l">une chose
+						${this.getPokemonEncounters()}
+					</div>
 				</div>
 			</div>
 		`
