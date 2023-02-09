@@ -16,18 +16,20 @@
 
 const eventType = {
 	TOGGLE_DRAWER: 'TOGGLE_DRAWER',
+	UPDATER: 'UPDATER'
 }
 
 export class StoreEvent {
-	state: { isDrawerOpen: boolean } = { isDrawerOpen: false }
+	state: { isDrawerOpen: boolean, updater: any } = { isDrawerOpen: false, updater: null }
 	listeners: Array<any> = []
+	
 	constructor() {}
 
 	getState() {
 		return this.state
 	}
 
-	dispatch(action: any) {
+	dispatch(action: { type: string, data: any }) {
 		switch (action.type) {
 			case eventType.TOGGLE_DRAWER:
 				this.state = {
@@ -35,6 +37,12 @@ export class StoreEvent {
 					isDrawerOpen: !this.state.isDrawerOpen,
 				}
 				break
+				case eventType.UPDATER:
+					this.state = {
+						...this.state,
+						updater: this.state.updater = action.data,
+					}
+					break
 			default:
 				break
 		}

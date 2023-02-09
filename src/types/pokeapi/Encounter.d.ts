@@ -13,4 +13,4 @@ export type Encounter = {
         max_chance: number,
         version: { name: string, url: string }
     }]
-}[]
+}

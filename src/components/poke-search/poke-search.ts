@@ -62,7 +62,6 @@ export class PokeSearch extends LitElement {
 		this.currentResearch = (<HTMLInputElement>(
 			this.shadowRoot?.querySelector('.pokesearch-form-field')
 		)).value
-		console.log('tst', this.currentResearch)
 
 		console.info(`Navigator language: ${navigator.language}`)
 		// Translate user research in to english word because Pokeapi just support english language
@@ -73,7 +72,6 @@ export class PokeSearch extends LitElement {
 		if (this.IsoLanguage.hasEnBrowser(navigator.language)) {
 			this.manageResearch(this.currentResearch)
 		}
-		console.log('tst', this.currentResearch)
 		// Promise to get cache
 		cache
 			.getCacheIfExistByUrl(
@@ -107,10 +105,6 @@ export class PokeSearch extends LitElement {
 		}
 
 		this.toggleWrapClass = true
-		// if (this.isSearch) {
-		// 	console.log('ici')
-		// 	super.requestUpdate()
-		// }
 
 		// Create cache if not exist
 		if (!(await caches.has(this.currentResearch.toLowerCase()))) {

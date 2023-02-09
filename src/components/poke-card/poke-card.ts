@@ -1,5 +1,5 @@
 import { LitElement, html, CSSResultGroup, css } from 'lit'
-import { customElement, property, query, queryAsync } from 'lit/decorators.js'
+import { customElement, property } from 'lit/decorators.js'
 import { ClassInfo, classMap } from 'lit/directives/class-map.js'
 import { until } from 'lit/directives/until.js'
 import style from './poke-card.scss'
@@ -7,18 +7,22 @@ import style from './poke-card.scss'
 import fallbackImg from '../../assets/images/onepiece.png'
 import { Encounter } from '../../types/pokeapi/Encounter'
 import { PokemonCardFactory } from '../../utils/factory/card/pokemonCardFactory'
+import { storeEventConst } from '../../index'
+
+//UI components imports
+import '../../ui-components/poke-loader/poke-loader'
 
 @customElement('poke-card')
 export class PokeCard extends LitElement {
 	@property() pokemon!: any
 	@property() moves!: any
 	@property() encounters!: Encounter
-	@queryAsync('select') _selects!: any
+	@property({ type: Boolean }) showLoader!: any
 
 	hasPokemon: boolean = false
 	hasPokemonClass: ClassInfo = {}
 	currentMoove!: any
-
+	
 	pokemonCardFactory: any = new PokemonCardFactory();
 
 	static styles = css`
@@ -37,66 +41,17 @@ export class PokeCard extends LitElement {
 	// Detect if props is update by the parent
 	requestUpdate() {
 		super.requestUpdate()
-		console.log('request poke card')
-
 		if(this.moves) {
 			this.pokemonCardFactory.create('moves', this.moves)
-			console.log('test', )
-			
 		}
+
+		if(this.encounters) {
+			this.pokemonCardFactory.create('encounters', this.encounters)
+		}
+
 
 		if (this.pokemon) {
 			this.hasPokemonClass = { hasPokemon: this.hasPokemon = true }
-		}
-	}
-
-	// getPokemonMoves() {
-	// 	if (this.hasMoves()) {
-	// 		const movenames = this.moves
-	// 			.map((move: any) => this.arrayMethodFilterBylang(move.names, 'filter'))
-	// 			.flat()
-	// 		return html`
-	// 			<label for="pokemonMoves">Competence: </label>
-	// 			<select @change=${this.onChange} id="pokemonMoves" name="pokemonMoves">
-	// 				${movenames.map(
-	// 					(name: any) => html`
-	// 						<option value="${name.name}">${name.name}</option>
-	// 					`
-	// 				)}
-	// 			</select>
-	// 		`
-	// 	}
-	// }
-
-	async getPokemonMoveDetail() {
-		if (this.hasMoves()) {
-			const selectElement = await this._selects
-			this.currentMoove = this.moves.find((move: any) =>
-				move.names.find((name: any) => name.name == selectElement.value)
-			)
-
-			return html`
-				<ul>
-					<li>${this.currentMoove.name}</li>
-					<li>${this.currentMoove.accuracy}</li>
-					<li>${this.currentMoove.damage_class.name}</li>
-					<li>
-						${this.arrayMethodFilterBylang(
-							this.currentMoove.flavor_text_entries,
-							'find',
-							'flavor_text'
-						)}
-					</li>
-					<li>
-						${this.currentMoove.meta.ailment.name != 'none'
-							? this.currentMoove.meta.ailment.name
-							: null}
-					</li>
-					<li>${this.currentMoove.power}</li>
-					<li>${this.currentMoove.power}</li>
-					<li>${this.currentMoove.pp}</li>
-				</ul>
-			`
 		}
 	}
 
@@ -107,7 +62,24 @@ export class PokeCard extends LitElement {
 	}
 
 	getPokemonEncounters() {
-		console.log('encounter poke card', this.encounters)
+		if (this.showLoader) {
+			return html`<poke-loader .isVisible="${this.showLoader}"></poke-loader>`
+		} else {
+			if (this.moves) {
+				return this.pokemonCardFactory.ef.getEncounters()
+			}
+		}
+	
+	}
+
+	dynamicDisplayPokemonMoves() {
+		if (this.moves) {
+			const template = this.pokemonCardFactory.mf.getPokemonMoveDetail()
+			storeEventConst.subscribe(() => {
+				super.requestUpdate()
+			})
+			return template	
+		}
 	}
 
 	render() {
@@ -116,17 +88,9 @@ export class PokeCard extends LitElement {
 				<div class="ds-flex">
 					<div class="pokecard-stats ds-col__12-s ds-col__5-l">
 
-						${this.pokemonCardFactory.mf.getPokemonMoves()}
-
-						${until(
-							this.getPokemonMoveDetail().then((response) =>
-								response
-									? html`${response}`
-									: html`pokemon move detail don't work fine`
-							),
-							html`Loading...`
-						)}
-						
+						${this.moves ? this.pokemonCardFactory.mf.getPokemonMoves() : "rien dans les moves"}
+				
+						${until(this.dynamicDisplayPokemonMoves())}
 					</div>
 					<div class="pokeball ds-col__6-s ds-col__2-l">
 						<img
@@ -137,37 +101,11 @@ export class PokeCard extends LitElement {
 							alt="${this.pokemon?.name}"
 							onerror="this.onerror=null;this.src='${fallbackImg}';" />
 					</div>
-					<div class="pokecard-stats ds-col__12-s ds-col__5-l">une chose
-						${this.getPokemonEncounters()}
+					<div class="pokecard-stats ds-col__12-s ds-col__5-l">
+						${until(this.getPokemonEncounters())}
 					</div>
 				</div>
 			</div>
 		`
 	}
-
-	hasMoves() {
-		return this.moves && this.moves.length > 0 ? true : false
-	}
-
-	onChange(e: any) {
-		console.log('event', e)
-		super.requestUpdate()
-	}
-	//   adoptedCallBack() {
-	//   console.log("adoptedCallBack");
-	// }
-
-	// async attributeChangedCallback(e: any) {
-	//   console.log("attributChangedCallBack");
-	// }
-	// hasChanged() {
-	//   console.log("hasChanged");
-	// }
-
-	// update() {
-	//   console.log("update");
-	// }
-	// updated() {
-	//   console.log("updated");
-	// }
 }
