@@ -2,6 +2,7 @@ import { html } from "lit";
 import { PokemonCard } from "../pokemonCardInterface";
 import { storeEventConst } from "../../../../index";
 import { map } from "lit/directives/map.js";
+import * as CopyPlugin from "copy-webpack-plugin";
 
 export class MovesFactory implements PokemonCard  {
     constructor(moves: []) {
@@ -39,27 +40,25 @@ export class MovesFactory implements PokemonCard  {
             this.selectElement = this.selectElement ? this.selectElement : this.moves[0]
             if (this.selectElement) {
                 this.currentMoove = this.selectElement
-                
                 return html`
                     <ul>
-                        <li>${this.currentMoove.name}</li>
-                        <li>${this.currentMoove.accuracy}</li>
-                        <li>${this.currentMoove.damage_class.name}</li>
-                        <li>
+                        <li title="name: ${this.currentMoove.name}">${this.currentMoove.name}</li>
+                        <li title="accuracy: ${this.currentMoove.accuracy}">${this.currentMoove.accuracy}</li>
+                        <li title="damage class: ${this.currentMoove.damage_class.name}">${this.currentMoove.damage_class.name}</li>
+                        <li title="attack description: ${this.arrayMethodFilterBylang(this.currentMoove.flavor_text_entries,'find','flavor_text')}">
                             ${this.arrayMethodFilterBylang(
                                 this.currentMoove.flavor_text_entries,
                                 'find',
                                 'flavor_text'
                             )}
                         </li>
-                        <li>
+                        <li title="ailment: ${this.currentMoove.meta.ailment.name}">
                             ${this.currentMoove.meta.ailment.name != 'none'
                                 ? this.currentMoove.meta.ailment.name
                                 : null}
                         </li>
-                        <li>${this.currentMoove.power}</li>
-                        <li>${this.currentMoove.power}</li>
-                        <li>${this.currentMoove.pp}</li>
+                        <li title="power: ${this.currentMoove.power}">${this.currentMoove.power}</li>
+                        <li title="PP: ${this.currentMoove.pp}">${this.currentMoove.pp}</li>
                     </ul>
                 `
             }

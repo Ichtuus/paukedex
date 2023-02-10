@@ -11,12 +11,12 @@
 		margin: 0;
 		overflow: hidden;
 		align-items: center;
-		width: 100vw;
-		height: 100vh;
+		width: 100%;
+		height: 100%;
 		transition: height 1s ease;
 
 		&.toggleWrap {
-			height: 24vh;
+			height: auto;
 		}
 	}
 

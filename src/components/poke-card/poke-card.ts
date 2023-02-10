@@ -2,6 +2,7 @@ import { LitElement, html, CSSResultGroup, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { ClassInfo, classMap } from 'lit/directives/class-map.js'
 import { until } from 'lit/directives/until.js'
+import { when } from 'lit/directives/when.js';
 import style from './poke-card.scss'
 
 import fallbackImg from '../../assets/images/onepiece.png'
@@ -9,15 +10,11 @@ import { Encounter } from '../../types/pokeapi/Encounter'
 import { PokemonCardFactory } from '../../utils/factory/card/pokemonCardFactory'
 import { storeEventConst } from '../../index'
 
-//UI components imports
-import '../../ui-components/poke-loader/poke-loader'
-
 @customElement('poke-card')
 export class PokeCard extends LitElement {
 	@property() pokemon!: any
 	@property() moves!: any
 	@property() encounters!: Encounter
-	@property({ type: Boolean }) showLoader!: any
 
 	hasPokemon: boolean = false
 	hasPokemonClass: ClassInfo = {}
@@ -45,7 +42,7 @@ export class PokeCard extends LitElement {
 			this.pokemonCardFactory.create('moves', this.moves)
 		}
 
-		if(this.encounters) {
+		if (this.encounters) {
 			this.pokemonCardFactory.create('encounters', this.encounters)
 		}
 
@@ -62,12 +59,8 @@ export class PokeCard extends LitElement {
 	}
 
 	getPokemonEncounters() {
-		if (this.showLoader) {
-			return html`<poke-loader .isVisible="${this.showLoader}"></poke-loader>`
-		} else {
-			if (this.moves) {
-				return this.pokemonCardFactory.ef.getEncounters()
-			}
+		if (this.encounters) {
+			return this.pokemonCardFactory.ef.getEncounters()
 		}
 	
 	}
@@ -101,8 +94,8 @@ export class PokeCard extends LitElement {
 							alt="${this.pokemon?.name}"
 							onerror="this.onerror=null;this.src='${fallbackImg}';" />
 					</div>
-					<div class="pokecard-stats ds-col__12-s ds-col__5-l">
-						${until(this.getPokemonEncounters())}
+					<div class="pokecard-stats ds-col__12-s ds-col__5-l ${classMap({ isnotvisible: Array.isArray(this.encounters) && !this.encounters.length })}">
+						${when(Array.isArray(this.encounters) && this.encounters.length > 0, () => until(this.getPokemonEncounters()))}
 					</div>
 				</div>
 			</div>
