@@ -1,9 +1,9 @@
 import { Pokemon } from '@/types/pokeapi'
 import { PokeApiUrls } from './urls'
 
-async function getAllPokemon(): Promise<Pokemon> {
-	console.log('getPokemon api')
-	return await fetch(PokeApiUrls.ALL_POKEMON).then((response: any) => {
+async function getAllPokemon(offset: number, limit: number): Promise<Pokemon> {
+	console.log('getAllPokemon api')
+	return await fetch(`${PokeApiUrls.ONE_POKEMON}?offset=${offset}&limit=${limit}`).then((response: any) => {
 		return response.json()
 	})
 }

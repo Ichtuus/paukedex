@@ -2,7 +2,6 @@ import { html } from "lit";
 import { PokemonCard } from "../pokemonCardInterface";
 import { storeEventConst } from "../../../../index";
 import { map } from "lit/directives/map.js";
-import * as CopyPlugin from "copy-webpack-plugin";
 
 export class MovesFactory implements PokemonCard  {
     constructor(moves: []) {

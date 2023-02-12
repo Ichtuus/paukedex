@@ -30,6 +30,33 @@ export class PokeCard extends LitElement {
 		super()
 	}
 
+	render() {
+		return html`
+			<div class="ds-container pokecard-body ${classMap(this.hasPokemonClass)}">
+				<div class="ds-flex">
+					<div class="pokecard-stats ds-col__12-s ds-col__5-l">
+
+						${this.moves ? this.pokemonCardFactory.mf.getPokemonMoves() : "rien dans les moves"}
+				
+						${until(this.dynamicDisplayPokemonMoves())}
+					</div>
+					<div class="pokeball ds-col__6-s ds-col__2-l">
+						<img
+							class="pokeball-pokemonImg"
+							src="${this.pokemon?.sprites.other.dream_world.front_default
+								? this.pokemon?.sprites.other.dream_world.front_default
+								: this.pokemon?.sprites.other.home.front_default}"
+							alt="${this.pokemon?.name}"
+							onerror="this.onerror=null;this.src='${fallbackImg}';" />
+					</div>
+					<div class="pokecard-stats ds-col__12-s ds-col__5-l ${classMap({ isnotvisible: Array.isArray(this.encounters) && !this.encounters.length })}">
+						${when(Array.isArray(this.encounters) && this.encounters.length > 0, () => until(this.getPokemonEncounters()))}
+					</div>
+				</div>
+			</div>
+		`
+	}
+
 	connectedCallback(): void {
 		// Needed to have rendering
 		super.connectedCallback()
@@ -73,32 +100,5 @@ export class PokeCard extends LitElement {
 			})
 			return template	
 		}
-	}
-
-	render() {
-		return html`
-			<div class="ds-container pokecard-body ${classMap(this.hasPokemonClass)}">
-				<div class="ds-flex">
-					<div class="pokecard-stats ds-col__12-s ds-col__5-l">
-
-						${this.moves ? this.pokemonCardFactory.mf.getPokemonMoves() : "rien dans les moves"}
-				
-						${until(this.dynamicDisplayPokemonMoves())}
-					</div>
-					<div class="pokeball ds-col__6-s ds-col__2-l">
-						<img
-							class="pokeball-pokemonImg"
-							src="${this.pokemon?.sprites.other.dream_world.front_default
-								? this.pokemon?.sprites.other.dream_world.front_default
-								: this.pokemon?.sprites.other.home.front_default}"
-							alt="${this.pokemon?.name}"
-							onerror="this.onerror=null;this.src='${fallbackImg}';" />
-					</div>
-					<div class="pokecard-stats ds-col__12-s ds-col__5-l ${classMap({ isnotvisible: Array.isArray(this.encounters) && !this.encounters.length })}">
-						${when(Array.isArray(this.encounters) && this.encounters.length > 0, () => until(this.getPokemonEncounters()))}
-					</div>
-				</div>
-			</div>
-		`
 	}
 }

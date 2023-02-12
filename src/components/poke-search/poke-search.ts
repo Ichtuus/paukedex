@@ -18,6 +18,7 @@ import pokeball from '../../assets/images/hyperball.png'
 
 //UI components imports
 import '../../ui-components/poke-loader/poke-loader'
+import { Encounter } from '../../types/pokeapi/Encounter'
 
 export enum ErrorTypeE {
 	NOTEXIST = 'notExist',
@@ -34,6 +35,7 @@ const NBR_SHOW_POKEMON = 5;
 export class PokeSearch extends LitElement {
 	@property() searchError: string | undefined = ''
 	@property() moves!: {}[]
+	@property() encounters!: Encounter[]
 	@property({ type: String }) pokeball = './hyperball.png'
 	@property({ type: Boolean }) toggleWrapClass = false
 	@property({ type: Boolean }) showLoader = false;
@@ -100,6 +102,8 @@ export class PokeSearch extends LitElement {
 				this.currentResearch.toLowerCase()
 			)
 			this.moves = await pokemonApi.getPokemonMoves(neededPokemon.moves)
+			this.encounters = await pokemonApi.getPokemonEncounters(neededPokemon.location_area_encounters);
+
 			this.showLoader = false
 
 		}
@@ -117,6 +121,8 @@ export class PokeSearch extends LitElement {
 			)
 		}
 
+
+
 		this.dispatchEvent(
 			new CustomEvent('getPokemon', {
 				detail: neededPokemon,
@@ -126,6 +132,12 @@ export class PokeSearch extends LitElement {
 		this.dispatchEvent(
 			new CustomEvent('getPokemonMoves', {
 				detail: this.moves,
+				composed: true,
+			})
+		)
+		this.dispatchEvent(
+			new CustomEvent('getPokemonEncounters', {
+				detail: this.encounters,
 				composed: true,
 			})
 		)
