@@ -16,6 +16,7 @@ export class MovesFactory implements PokemonCard  {
     currentMoove!: any
     selectElement!: any
     
+    
     getPokemonMoves() { 
 		if (this.hasMoves()) {
 			const movenames = this.moves
