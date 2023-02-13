@@ -23,9 +23,10 @@ export enum pagination {
 @customElement('poke-all')
 export class PokeAll extends LitElement {
     @property() pokemonall!: any
-    offset: any = Math.floor(Math.random() * 64) * 20
     @property() nextPage: string = ""
-    @property() previousPage: any = null
+    @property() previousPage: string = ""
+    offset: any = Math.floor(Math.random() * 64) * 20
+
 
 	static styles = css`
     ${style as unknown as CSSResultGroup}`
@@ -35,16 +36,15 @@ export class PokeAll extends LitElement {
 	}
 
     render() {
-        console.log('this pok rendered', this.pokemonall)
         if (this.pokemonall) {
             return html`   
             <ul class="pokeall">
-            <li @click="${() => this.pokemonByPageHandler(previous_next.PREVIOUS)}" class="pokeall-showmore">show less</li>
+            <li tabindex="0" @click="${() => this.pokemonByPageHandler(previous_next.PREVIOUS)}" class="pokeall-showless">show less</li>
                 ${map(this.pokemonall.results, (pokemon: any, index: number) => { 
            
-                    return html`<li class="pokeall-item" title="${pokemon.name}">${enToFrPokemonName(pokemon.name)}</li>`
+                    return html`<li tabindex="0" class="pokeall-item" title="${pokemon.name}">${enToFrPokemonName(pokemon.name)}</li>`
                 })}
-               <li @click="${() => this.pokemonByPageHandler(previous_next.NEXT)}" class="pokeall-showmore">show more</li>
+               <li tabindex="0" @click="${() => this.pokemonByPageHandler(previous_next.NEXT)}" class="pokeall-showmore">show more</li>
             </ul>
             `   
         }
@@ -72,11 +72,3 @@ export class PokeAll extends LitElement {
         this.previousPage = this.pokemonall.previous
     }
 }
-
-// <div class="ds-container">
-// <ul class="ds-flex">
-//     ${map(this.pokemonall.results, (pokemon: any, index: number) => { 
-//         return html`<li class="ds-col__12-s ds-col__5-l">${enToFrPokemonName(pokemon.name)}</li>`
-//     })}
-// </ul>
-// </div>

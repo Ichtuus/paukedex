@@ -26,6 +26,7 @@
         }
 
         &-item {
+            cursor: pointer;
             flex: 0 0 auto;
             width: 200px;
             height: 150px;
@@ -43,13 +44,14 @@
             margin-right: 16px;
         }
 
-        &-showmore {
+        &-showmore, &-showless {
             cursor: pointer;
             background-color: rgb(249, 211, 66) !important;
             color: inherit !important;
             padding: 4px;
             height: fit-content;
-            
+            align-self: center;
+
             &:hover,
             :active,
             :focus {

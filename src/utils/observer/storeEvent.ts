@@ -14,18 +14,31 @@
  *
  */
 
-const eventType = {
+export const eventType = {
 	TOGGLE_DRAWER: 'TOGGLE_DRAWER',
+	IS_SEARCH_ACTIVATED: 'IS_SEARCH_ACTIVATED',
 	UPDATER: 'UPDATER'
 }
 
+type storeEventStateT = {
+	isDrawerOpen: boolean,
+	searchActivated: boolean,
+	updater: any
+}
+
+const storeEventStateV = {
+	isDrawerOpen: false,
+	searchActivated: true,
+	updater: null,
+}
+
 export class StoreEvent {
-	state: { isDrawerOpen: boolean, updater: any } = { isDrawerOpen: false, updater: null }
+	state: storeEventStateT = storeEventStateV
 	listeners: Array<any> = []
 	
 	constructor() {}
 
-	getState() {
+	getState(): storeEventStateT {
 		return this.state
 	}
 
@@ -37,12 +50,18 @@ export class StoreEvent {
 					isDrawerOpen: !this.state.isDrawerOpen,
 				}
 				break
-				case eventType.UPDATER:
-					this.state = {
-						...this.state,
-						updater: this.state.updater = action.data,
-					}
-					break
+			case eventType.UPDATER:
+				this.state = {
+					...this.state,
+					updater: this.state.updater = action.data,
+				}
+			break
+			case eventType.IS_SEARCH_ACTIVATED:
+				this.state = {
+					...this.state,
+					searchActivated: this.state.searchActivated = action.data,
+				}
+			break
 			default:
 				break
 		}

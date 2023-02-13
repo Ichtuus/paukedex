@@ -2,6 +2,7 @@ import { html } from "lit";
 import { PokemonCard } from "../pokemonCardInterface";
 import { storeEventConst } from "../../../../index";
 import { map } from "lit/directives/map.js";
+import { eventType } from "../../../../utils/observer/storeEvent";
 
 export class MovesFactory implements PokemonCard  {
     constructor(moves: []) {
@@ -80,7 +81,7 @@ export class MovesFactory implements PokemonCard  {
             return name.name == e.target.value
             })
         })
-        storeEventConst.dispatch({ type: 'UPDATER', data: this.selectElement })
+        storeEventConst.dispatch({ type: eventType.UPDATER, data: this.selectElement })
         this.getPokemonMoveDetail()
 	}
 

@@ -9,7 +9,7 @@
 		"start": "webpack-dev-server",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"author": "",
+	"author": "Nicolas Diarra",
 	"license": "ISC",
 	"devDependencies": {
 		"@ichtus/design-sytem": "^1.3.0",

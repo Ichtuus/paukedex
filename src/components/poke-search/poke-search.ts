@@ -19,6 +19,8 @@ import pokeball from '../../assets/images/hyperball.png'
 //UI components imports
 import '../../ui-components/poke-loader/poke-loader'
 import { Encounter } from '../../types/pokeapi/Encounter'
+import { storeEventConst } from '../../index'
+import { eventType } from '../../utils/observer/storeEvent'
 
 export enum ErrorTypeE {
 	NOTEXIST = 'notExist',
@@ -39,8 +41,8 @@ export class PokeSearch extends LitElement {
 	@property({ type: String }) pokeball = './hyperball.png'
 	@property({ type: Boolean }) toggleWrapClass = false
 	@property({ type: Boolean }) showLoader = false;
-	@property({ type: Boolean }) showMoreCachePokemon = false
-	isSearch: boolean = false
+	@property({ type: Boolean }) notShowMoreCachePokemon = false
+
 	currentCache: any
 	currentResearch: string | undefined = ''
 	IsoLanguage = new IsoLanguage()
@@ -51,6 +53,33 @@ export class PokeSearch extends LitElement {
 
 	constructor() {
 		super()
+	}
+
+	render() {
+		return html`
+			<div
+				class="pokesearch-body ${this.toggleWrapClass ? 'toggleWrap' : ''}">
+				<div class="container">
+					<h1 class="pokesearch-title">POKEDEX</h1>
+					<div class="pokesearch-form form">
+
+						<label class="pokesearch-form-label">
+							<input
+								type="search"
+								class="pokesearch-form-field"
+								@keypress="${this.searchPokemon}"
+								placeholder="Choose an pokemon..."
+								value="" />
+						</label>
+						
+						${this.toggleSearchButtonLoaderVisibility()}
+
+					</div>
+					<p class="pokesearch-form-error">${this.searchError}</p>
+					${until(this.displayLastResearch())}
+				</div>
+			</div>
+		`
 	}
 
 	async searchPokemon(e: any) {
@@ -74,6 +103,7 @@ export class PokeSearch extends LitElement {
 		if (this.IsoLanguage.hasEnBrowser(navigator.language)) {
 			this.manageResearch(this.currentResearch)
 		}
+
 		// Promise to get cache
 		cache
 			.getCacheIfExistByUrl(
@@ -97,14 +127,14 @@ export class PokeSearch extends LitElement {
 				this.currentResearch.toLowerCase()
 			)
 		} else {
-
 			neededPokemon = await pokemonApi.getOnePokemon(
 				this.currentResearch.toLowerCase()
 			)
 			this.moves = await pokemonApi.getPokemonMoves(neededPokemon.moves)
 			this.encounters = await pokemonApi.getPokemonEncounters(neededPokemon.location_area_encounters);
-
 			this.showLoader = false
+			 
+			storeEventConst.dispatch({ type: eventType.IS_SEARCH_ACTIVATED, data: true })
 
 		}
 
@@ -120,8 +150,6 @@ export class PokeSearch extends LitElement {
 				this.currentResearch.toLowerCase()
 			)
 		}
-
-
 
 		this.dispatchEvent(
 			new CustomEvent('getPokemon', {
@@ -147,8 +175,6 @@ export class PokeSearch extends LitElement {
 		if (this.IsoLanguage.detectLanguage(research)?.en) {
 			// Needed if user use english translation with fr browser
 			try {
-				console.log('ici')
-
 				this.currentResearch = enToFrPokemonName(research)
 			} catch (e) {
 				console.error('error', e)
@@ -188,11 +214,11 @@ export class PokeSearch extends LitElement {
 	}
 
 	async displayLastResearch() {
-		let currentCacheFormatted: Array<string> = []
-		let currentCacheOtherResult: Array<string> = []
+		let currentCacheFormatted: any = []
+		let currentCacheOtherResult: any = []
 
 		this.currentCache = await cache.getAllCacheKey()
-		if (!this.showMoreCachePokemon) {
+		if (!this.notShowMoreCachePokemon) {
 			currentCacheFormatted = this.currentCache.slice(0, NBR_SHOW_POKEMON)
 			currentCacheOtherResult = this.currentCache.slice(NBR_SHOW_POKEMON, this.currentCache.length)
 		} else {
@@ -209,8 +235,8 @@ export class PokeSearch extends LitElement {
 						${enToFrPokemonName(pokemonName)}
 						</li>`
 			)}
-				<li class="pokesearch-showmore" style="color: white" ?hidden=${this.showMoreCachePokemon} @click="${() => this.showMoreOrLess(currentCacheOtherResult, ShowMoreOrLess.MORE)}">Show more</li>
-				<li class="pokesearch-showless" style="color: white" ?hidden=${!this.showMoreCachePokemon} @click="${() => this.showMoreOrLess(this.currentCache, ShowMoreOrLess.LESS)}">Show less</li>
+				<li tabindex="0" class="pokesearch-showmore" style="color: white" ?hidden=${this.notShowMoreCachePokemon && (!this.notShowMoreCachePokemon && !currentCacheFormatted.length)} @click="${() => this.showMoreOrLess(currentCacheOtherResult, ShowMoreOrLess.MORE)}">Show more</li>
+				<li tabindex="0" class="pokesearch-showless" style="color: white" ?hidden=${!this.notShowMoreCachePokemon} @click="${() => this.showMoreOrLess(this.currentCache, ShowMoreOrLess.LESS)}">Show less</li>
 			</ul>
 		`
 	}
@@ -218,10 +244,10 @@ export class PokeSearch extends LitElement {
 	showMoreOrLess(other: Array<string>, mode: string) {
 		if (mode !== ShowMoreOrLess.LESS) {
 			if (other.length) {
-				this.showMoreCachePokemon = true
+				this.notShowMoreCachePokemon = true
 			}
 		} else {
-			this.showMoreCachePokemon = false
+			this.notShowMoreCachePokemon = false
 		}
 	} 
 
@@ -276,30 +302,5 @@ export class PokeSearch extends LitElement {
 			</button>
 			`	
 		}
-	}
-
-	render() {
-		return html`
-			<div
-				class="pokesearch-body ${this.toggleWrapClass ? 'toggleWrap' : ''}">
-				<div class="container">
-					<h1 class="pokesearch-title">POKEDEX</h1>
-					<div class="pokesearch-form form">
-						<label class="pokesearch-form-label">
-							<input
-								type="search"
-								class="pokesearch-form-field"
-								@keypress="${this.searchPokemon}"
-								placeholder="Choose an pokemon..."
-								value="" />
-						</label>
-						
-						${this.toggleSearchButtonLoaderVisibility()}
-					</div>
-					<p class="pokesearch-form-error">${this.searchError}</p>
-					${until(this.displayLastResearch())}
-				</div>
-			</div>
-		`
 	}
 }
