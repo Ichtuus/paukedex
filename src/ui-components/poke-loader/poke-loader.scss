@@ -1,49 +1,56 @@
 .poke-loader {
-    margin-left: 5px;
-    width: 100%;
-    height: 40px;
-    text-align: center;
-    font-size: 10px;
-    visibility: hidden;
+  margin-left: 5px;
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  font-size: 10px;
+  visibility: hidden;
 
-    &.isvisible {
-        visibility: visible;
-    }
+  &.isvisible {
+    visibility: visible;
+  }
 
-    div {
-        background-color: rgb(249, 211, 66);
-        height: 100%;
-        width: 6px;
-        display: inline-block;
-        
-        -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-        animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-    }
+  div {
+    background-color: rgb(249, 211, 66);
+    height: 100%;
+    width: 6px;
+    display: inline-block;
 
-    .bounce1 {
-        -webkit-animation-delay: -0.32s;
-        animation-delay: -0.32s;
-    }
-  
-    .bounce2 {
-        -webkit-animation-delay: -0.16s;
-        animation-delay: -0.16s;
-    }
+    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  }
 
-      
-    @-webkit-keyframes sk-bouncedelay {
-        0%, 80%, 100% { -webkit-transform: scale(0) }
-        40% { -webkit-transform: scale(1.0) }
+  .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+  }
+
+  .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+  }
+
+  @-webkit-keyframes sk-bouncedelay {
+    0%,
+    80%,
+    100% {
+      -webkit-transform: scale(0);
     }
-  
-    @keyframes sk-bouncedelay {
-        0%, 80%, 100% { 
-            transform: scale(0);
-            -webkit-transform: scale(0);
-        } 40% { 
-            transform: scale(1.0);
-            -webkit-transform: scale(1.0);
-        }
+    40% {
+      -webkit-transform: scale(1);
     }
+  }
+
+  @keyframes sk-bouncedelay {
+    0%,
+    80%,
+    100% {
+      transform: scale(0);
+      -webkit-transform: scale(0);
+    }
+    40% {
+      transform: scale(1);
+      -webkit-transform: scale(1);
+    }
+  }
 }
-  

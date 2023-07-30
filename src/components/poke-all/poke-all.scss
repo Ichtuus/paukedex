@@ -1,63 +1,62 @@
 @import './node_modules/@ichtus/design-sytem/index.scss';
 
 :host {
-    position: absolute;
-    width: 100%;
-    top: 70%; 
+  position: absolute;
+  width: 100%;
+  top: 70%;
 
-    .pokeall {
-        display: flex;
-        overflow-x: scroll;
-        scroll-snap-type: x mandatory;
-        gap: 8px;
+  .pokeall {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    gap: 8px;
 
-        &::-webkit-scrollbar {
-            width: 0.2em;
-            background-color: #292826;
-        }
-        
-        &::-webkit-scrollbar-thumb {
-        background-color: #292826;
-        }
-        
-        &::-webkit-scrollbar-track {
-            border-radius: 10px;
-            background-color: #292826;
-        }
-
-        &-item {
-            cursor: pointer;
-            flex: 0 0 auto;
-            width: 200px;
-            height: 150px;
-            scroll-snap-align: center;
-            background-color: #f00;
-
-            
-        }
-
-        &:first-child {
-            margin-left: 16px;
-        }
-      
-        &:last-child {
-            margin-right: 16px;
-        }
-
-        &-showmore, &-showless {
-            cursor: pointer;
-            background-color: rgb(249, 211, 66) !important;
-            color: inherit !important;
-            padding: 4px;
-            height: fit-content;
-            align-self: center;
-
-            &:hover,
-            :active,
-            :focus {
-                background: #d4b743 !important;
-                color: #292826 !important;
-            }
-        }
+    &::-webkit-scrollbar {
+      width: 0.2em;
+      background-color: #292826;
     }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #292826;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background-color: #292826;
+    }
+
+    &-item {
+      cursor: pointer;
+      flex: 0 0 auto;
+      width: 200px;
+      height: 150px;
+      scroll-snap-align: center;
+      background-color: #f00;
+    }
+
+    &:first-child {
+      margin-left: 16px;
+    }
+
+    &:last-child {
+      margin-right: 16px;
+    }
+
+    &-showmore,
+    &-showless {
+      cursor: pointer;
+      background-color: rgb(249, 211, 66) !important;
+      color: inherit !important;
+      padding: 4px;
+      height: fit-content;
+      align-self: center;
+
+      &:hover,
+      :active,
+      :focus {
+        background: #d4b743 !important;
+        color: #292826 !important;
+      }
+    }
+  }
 }

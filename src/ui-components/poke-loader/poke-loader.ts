@@ -4,24 +4,25 @@ import style from './poke-loader.scss'
 
 @customElement('poke-loader')
 export class PokeLoader extends LitElement {
-	static styles = css`
-		${style as unknown as CSSResultGroup}
-	`
+  static styles = css`
+    ${style as unknown as CSSResultGroup}
+  `
 
-	@property({ type: String }) isVisible!: string
+  @property({ type: String }) isVisible!: string
 
-	constructor() {
-		super()
-	}
+  constructor() {
+    super()
+  }
 
-	render() {
-        return html`
-        <div class="poke-loader ${this.isVisible ? 'isvisible' : ''}" ?disabled=${this.isVisible}>
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
-        </div>
-
-		`
-	}
+  render() {
+    return html`
+      <div
+        class="poke-loader ${this.isVisible ? 'isvisible' : ''}"
+        ?disabled=${this.isVisible}>
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    `
+  }
 }
