@@ -1,5 +1,5 @@
 //Lit core
-import { LitElement, html, css, CSSResultGroup } from 'lit'
+import { LitElement, html, css, CSSResultGroup, PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { until } from 'lit/directives/until.js'
 
@@ -18,6 +18,7 @@ import pokeball from '../../assets/images/hyperball.png'
 
 //UI components imports
 import '../../ui-components/poke-loader/poke-loader'
+import '../poke-random/poke-random'
 import { Encounter } from '../../types/pokeapi/Encounter'
 import { storeEventConst } from '../../index'
 import { eventType } from '../../utils/observer/storeEvent'
@@ -38,6 +39,8 @@ export class PokeSearch extends LitElement {
 	@property() searchError: string | undefined = ''
 	@property() moves!: {}[]
 	@property() encounters!: Encounter[]
+	@property() randomPokemon!: any
+
 	@property({ type: String }) pokeball = './hyperball.png'
 	@property({ type: Boolean }) toggleWrapClass = false
 	@property({ type: Boolean }) showLoader = false;
@@ -61,6 +64,7 @@ export class PokeSearch extends LitElement {
 				class="pokesearch-body ${this.toggleWrapClass ? 'toggleWrap' : ''}">
 				<div class="container">
 					<h1 class="pokesearch-title">POKEDEX</h1>
+					${until(this.getPokeRandom())}
 					<div class="pokesearch-form form">
 
 						<label class="pokesearch-form-label">
@@ -69,7 +73,7 @@ export class PokeSearch extends LitElement {
 								class="pokesearch-form-field"
 								@keypress="${this.searchPokemon}"
 								placeholder="Choose an pokemon..."
-								value="" />
+								value="${this.randomPokemon ? this.randomPokemon.fr : ''}" />
 						</label>
 						
 						${this.toggleSearchButtonLoaderVisibility()}
@@ -80,6 +84,13 @@ export class PokeSearch extends LitElement {
 				</div>
 			</div>
 		`
+	}
+
+	getPokeRandom() {
+		const data = html`
+			<poke-random><poke-random/>
+        `
+        return data
 	}
 
 	async searchPokemon(e: any) {
@@ -135,7 +146,6 @@ export class PokeSearch extends LitElement {
 			this.showLoader = false
 			 
 			storeEventConst.dispatch({ type: eventType.IS_SEARCH_ACTIVATED, data: true })
-
 		}
 
 		this.toggleWrapClass = true
@@ -302,5 +312,15 @@ export class PokeSearch extends LitElement {
 			</button>
 			`	
 		}
+	}
+
+	firstUpdated() {
+		storeEventConst.subscribe( () => {
+            const state = storeEventConst.getState();
+			console.log('OUAAAAAAAAAAAAAAAAAAH', state)
+			if (state.hasOwnProperty('randomPokemon') && state.searchActivated) {
+                this.randomPokemon = state.randomPokemon
+            }
+        })
 	}
 }

@@ -17,19 +17,23 @@
 export const eventType = {
 	TOGGLE_DRAWER: 'TOGGLE_DRAWER',
 	IS_SEARCH_ACTIVATED: 'IS_SEARCH_ACTIVATED',
-	UPDATER: 'UPDATER'
+	UPDATER: 'UPDATER',
+	RANDOM_POKEMON: 'RANDOM_POKEMON'
 }
 
 type storeEventStateT = {
 	isDrawerOpen: boolean,
 	searchActivated: boolean,
-	updater: any
+	updater: any,
+	randomPokemon: object
 }
 
 const storeEventStateV = {
 	isDrawerOpen: false,
 	searchActivated: true,
 	updater: null,
+	randomPokemon: {fr: '', en: ''}
+
 }
 
 export class StoreEvent {
@@ -60,6 +64,12 @@ export class StoreEvent {
 				this.state = {
 					...this.state,
 					searchActivated: this.state.searchActivated = action.data,
+				}
+			break
+			case eventType.RANDOM_POKEMON:
+				this.state = {
+					...this.state,
+					randomPokemon: this.state.randomPokemon = action.data,
 				}
 			break
 			default:
